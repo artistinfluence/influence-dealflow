@@ -5,6 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { CampaignData } from '@/types/campaign';
 import { ClientDetails } from './ClientDetailsForm';
+import { generateProposal } from '@/lib/proposal-api';
 
 interface ProposalGenerationProps {
   clientDetails: ClientDetails;
@@ -28,23 +29,7 @@ const ProposalGeneration: React.FC<ProposalGenerationProps> = ({
     setLastResult(null);
 
     try {
-      const response = await fetch('/api/generate-proposal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          clientDetails,
-          campaignData,
-          recipientEmail: email,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate proposal');
-      }
-
-      const result = await response.json();
+      const result = await generateProposal(clientDetails, campaignData, email);
       
       setLastResult('success');
       toast({
