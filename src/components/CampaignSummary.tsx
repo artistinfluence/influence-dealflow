@@ -18,10 +18,13 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
     const services = [];
 
     if (campaignData.youtubeAds.enabled && campaignData.youtubeAds.totalPrice > 0) {
-      const sectionCount = campaignData.youtubeAds.sections.filter(s => s.price > 0).length;
+      const activeSections = campaignData.youtubeAds.sections.filter(s => s.price > 0);
+      const sectionDetails = activeSections.map(s => 
+        `${s.platform.split(' - ')[0]} (${s.targetViews.toLocaleString()} views)`
+      ).join(', ');
       services.push({
         name: 'YOUTUBE ADVERTISING',
-        details: `${sectionCount} ad type${sectionCount !== 1 ? 's' : ''} configured`,
+        details: sectionDetails || `${activeSections.length} campaign(s) configured`,
         price: campaignData.youtubeAds.totalPrice,
       });
     }

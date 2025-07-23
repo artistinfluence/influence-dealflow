@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ export interface ClientDetails {
   artistName: string;
   songTitle: string;
   genre: string;
+  tier: string;
   releaseDate: Date;
 }
 
@@ -62,6 +63,25 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
             onChange={(e) => onUpdate({ ...details, genre: e.target.value })}
             className="text-center bg-card border-border focus:ring-primary"
           />
+        </div>
+
+        <div className="space-y-2">
+          <Select value={details.tier} onValueChange={(value) => onUpdate({ ...details, tier: value })}>
+            <SelectTrigger className="text-center bg-card border-border focus:ring-primary">
+              <SelectValue placeholder="Select artist tier" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border-border">
+              <SelectItem value="emerging" className="text-center justify-center">
+                Emerging
+              </SelectItem>
+              <SelectItem value="mid-tier" className="text-center justify-center">
+                Mid-Tier
+              </SelectItem>
+              <SelectItem value="established" className="text-center justify-center">
+                Established
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

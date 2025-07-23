@@ -26,7 +26,7 @@ serve(async (req) => {
     const proposalContent = await generateProposalContent(clientDetails, campaignData);
     
     // Send email via Resend
-    const emailResponse = await sendProposalEmail(recipientEmail, clientDetails, proposalContent);
+    const emailResponse = await sendProposalEmail(recipientEmail, clientDetails, proposalContent, campaignData);
     
     // Track proposal in database
     const totalAmount = calculateTotalAmount(campaignData);
@@ -62,17 +62,17 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
 Artist: ${clientDetails.artistName}
 Song: "${clientDetails.songTitle}"
 Genre: ${clientDetails.genre}
-Budget: $${clientDetails.budget.toLocaleString()}
+Artist Tier: ${clientDetails.tier || 'Not specified'}
 Release Date: ${new Date(clientDetails.releaseDate).toLocaleDateString()}
 
 Active Services:
-${activeServices.map(service => `- ${service.name}: ${service.details} - ${service.price}`).join('\n')}
+${activeServices.map(service => `- ${service.name}: ${service.details} - $${service.price}`).join('\n')}
 
 Total Campaign Cost: $${totalAmount.toLocaleString()}
 
-Generate 5 campaign objectives based on the selected services and genre. Make them specific and actionable for ${clientDetails.genre} music promotion.
+Generate 5 campaign objectives based on the selected services, genre, and artist tier. Make them specific and actionable for ${clientDetails.genre} music promotion. Consider the artist's tier (${clientDetails.tier || 'emerging'}) when setting realistic expectations and goals.
 
-Also generate campaign goals that are realistic and genre-specific for ${clientDetails.genre} artists.
+Also generate campaign goals that are realistic and genre-specific for ${clientDetails.genre} artists at the ${clientDetails.tier || 'emerging'} level.
 
 Keep the tone professional but energetic, matching Artist Influence's brand.`;
 
@@ -100,11 +100,11 @@ Keep the tone professional but energetic, matching Artist Influence's brand.`;
   return data.choices[0].message.content;
 }
 
-async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiContent: string) {
+async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiContent: string, campaignData: any) {
   const validUntil = new Date();
   validUntil.setDate(validUntil.getDate() + 14);
   
-  const emailHtml = generateEmailTemplate(clientDetails, aiContent, validUntil);
+  const emailHtml = generateEmailTemplate(clientDetails, aiContent, validUntil, campaignData);
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -123,7 +123,7 @@ async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiC
   return await response.json();
 }
 
-function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil: Date): string {
+function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil: Date, campaignData: any): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -168,7 +168,7 @@ function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil
         </div>
         
         <div class="total">
-            Total Campaign Investment: $${calculateTotalAmount(getDefaultCampaignData()).toLocaleString()}
+            Total Campaign Investment: $${calculateTotalAmount(campaignData).toLocaleString()}
         </div>
         
         <div class="section">
@@ -196,7 +196,47 @@ function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil
 
 function getActiveServices(campaignData: any) {
   const services = [];
-  // Implementation would extract active services with details and pricing
+  
+  if (campaignData.youtubeAds?.enabled) {
+    services.push({
+      name: 'YouTube Advertising',
+      details: `${campaignData.youtubeAds.sections?.length || 0} campaign(s)`,
+      price: campaignData.youtubeAds.totalPrice || 0
+    });
+  }
+  
+  if (campaignData.spotifyPlaylisting?.enabled) {
+    services.push({
+      name: 'Spotify Playlisting',
+      details: `${campaignData.spotifyPlaylisting.selectedPackage} streams package`,
+      price: campaignData.spotifyPlaylisting.price || 0
+    });
+  }
+  
+  if (campaignData.soundcloudReposts?.enabled) {
+    services.push({
+      name: 'SoundCloud Reposts',
+      details: `${campaignData.soundcloudReposts.selectedPackage} package`,
+      price: campaignData.soundcloudReposts.price || 0
+    });
+  }
+  
+  if (campaignData.instagramSeeding?.enabled) {
+    services.push({
+      name: 'Instagram Seeding',
+      details: `$${campaignData.instagramSeeding.budget || 0} budget`,
+      price: campaignData.instagramSeeding.price || 0
+    });
+  }
+  
+  if (campaignData.metaTiktokAds?.enabled) {
+    services.push({
+      name: 'Meta & TikTok Ads',
+      details: `${campaignData.metaTiktokAds.platform} - $${campaignData.metaTiktokAds.budget || 0} budget`,
+      price: campaignData.metaTiktokAds.price || 0
+    });
+  }
+  
   return services;
 }
 

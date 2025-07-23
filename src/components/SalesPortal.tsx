@@ -14,6 +14,7 @@ const SalesPortal: React.FC = () => {
     artistName: '',
     songTitle: '',
     genre: '',
+    tier: '',
     releaseDate: new Date(),
   });
   const [campaignData, setCampaignData] = useState<CampaignData>(getDefaultCampaignData());
@@ -45,7 +46,8 @@ const SalesPortal: React.FC = () => {
   const isFormValid = () => {
     const detailsValid = clientDetails.artistName && 
                         clientDetails.songTitle && 
-                        clientDetails.genre;
+                        clientDetails.genre &&
+                        clientDetails.tier;
     
     const hasActiveServices = Object.values(campaignData).some(service => service.enabled && 
       ((service as any).price > 0 || (service as any).totalPrice > 0));

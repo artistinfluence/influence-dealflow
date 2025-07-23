@@ -46,9 +46,6 @@ const InstagramSeedingService: React.FC<InstagramSeedingServiceProps> = ({
             <p className="text-sm">
               <span className="font-bebas">Ad Spend:</span> ${formatNumber(adSpend)}
             </p>
-            <p className="text-sm text-muted-foreground">
-              Expected Views: {formatNumber(minViews)} - {formatNumber(maxViews)}
-            </p>
           </div>
           
           <div className="text-xs text-center text-muted-foreground border-t border-border pt-2">
