@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,6 @@ export interface ClientDetails {
   artistName: string;
   songTitle: string;
   genre: string;
-  budget: number;
   releaseDate: Date;
 }
 
@@ -21,22 +20,8 @@ interface ClientDetailsFormProps {
   onUpdate: (details: ClientDetails) => void;
 }
 
-const genres = [
-  'EDM', 'Hip-Hop', 'Pop', 'Rock', 'R&B', 'Country', 
-  'Electronic', 'Alternative', 'Indie', 'Latin', 'Other'
-];
-
-const formatCurrency = (value: string) => {
-  const number = value.replace(/[^\d]/g, '');
-  return number.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};
 
 const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate }) => {
-  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value);
-    const number = parseInt(formatted.replace(/,/g, '')) || 0;
-    onUpdate({ ...details, budget: number });
-  };
 
   return (
     <div className="center-content space-y-6">
@@ -71,26 +56,11 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
         </div>
 
         <div className="space-y-2">
-          <Select value={details.genre} onValueChange={(value) => onUpdate({ ...details, genre: value })}>
-            <SelectTrigger className="text-center bg-card border-border focus:ring-primary">
-              <SelectValue placeholder="Select genre" />
-            </SelectTrigger>
-            <SelectContent className="bg-popover border-border">
-              {genres.map((genre) => (
-                <SelectItem key={genre} value={genre} className="text-center justify-center">
-                  {genre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
           <Input
-            placeholder="Total budget in USD"
-            value={details.budget ? formatCurrency(details.budget.toString()) : ''}
-            onChange={handleBudgetChange}
-            className="text-center bg-card border-border focus:ring-primary number-input"
+            placeholder="Genre (e.g., EDM, Hip-Hop, Pop, etc.)"
+            value={details.genre}
+            onChange={(e) => onUpdate({ ...details, genre: e.target.value })}
+            className="text-center bg-card border-border focus:ring-primary"
           />
         </div>
 

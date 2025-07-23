@@ -14,7 +14,6 @@ const SalesPortal: React.FC = () => {
     artistName: '',
     songTitle: '',
     genre: '',
-    budget: 0,
     releaseDate: new Date(),
   });
   const [campaignData, setCampaignData] = useState<CampaignData>(getDefaultCampaignData());
@@ -32,7 +31,7 @@ const SalesPortal: React.FC = () => {
 
   const calculateCommissions = (campaignData: CampaignData): CommissionData => {
     const calculateGrossCommission = (price: number) => price * 0.2;
-    const calculateNetCommission = (price: number) => price * 0.7 * 0.2;
+    const calculateNetCommission = (price: number) => price * 0.3 * 0.2;
 
     return {
       youtubeAds: campaignData.youtubeAds.enabled ? calculateGrossCommission(campaignData.youtubeAds.totalPrice) : 0,
@@ -46,8 +45,7 @@ const SalesPortal: React.FC = () => {
   const isFormValid = () => {
     const detailsValid = clientDetails.artistName && 
                         clientDetails.songTitle && 
-                        clientDetails.genre && 
-                        clientDetails.budget > 0;
+                        clientDetails.genre;
     
     const hasActiveServices = Object.values(campaignData).some(service => service.enabled && 
       ((service as any).price > 0 || (service as any).totalPrice > 0));
