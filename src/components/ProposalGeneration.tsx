@@ -88,12 +88,21 @@ const ProposalGeneration: React.FC<ProposalGenerationProps> = ({
         </Button>
         
         {lastResult && (
-          <div className="center-content">
+          <div className="center-content space-y-3">
             {lastResult === 'success' ? (
-              <div className="flex items-center gap-2 text-green-500">
-                <CheckCircle className="h-4 w-4" />
-                <span className="text-sm">Proposal sent successfully to {email}</span>
-              </div>
+              <>
+                <div className="flex items-center gap-2 text-green-500">
+                  <CheckCircle className="h-4 w-4" />
+                  <span className="text-sm">Proposal sent successfully to {email}</span>
+                </div>
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                  className="text-xs px-4 py-2"
+                >
+                  Generate New Proposal
+                </Button>
+              </>
             ) : (
               <div className="flex items-center gap-2 text-destructive">
                 <XCircle className="h-4 w-4" />

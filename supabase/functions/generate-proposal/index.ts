@@ -57,22 +57,28 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
   const activeServices = getActiveServices(campaignData);
   const totalAmount = calculateTotalAmount(campaignData);
   
-  const prompt = `Generate a professional campaign proposal for Artist Influence with the following details:
+  const prompt = `Generate a professional campaign proposal for Artist Influence. Create two sections:
+
+CAMPAIGN OBJECTIVES:
+Write a brief 2-3 sentence overview describing the artist and their latest release, then explain how this campaign will support their goals. Use this format as inspiration:
+
+"${clientDetails.artistName} is a ${clientDetails.tier?.toLowerCase() || 'emerging'} ${clientDetails.genre} artist. Their latest release, "${clientDetails.songTitle}", [describe the style/sound briefly]. To support the rollout, this campaign will [explain strategy based on selected services].
+
+We'll combine [list selected services] to maximize ROI while maintaining organic alignment with ${clientDetails.artistName}'s sonic identity."
+
+CAMPAIGN GOALS:
+Generate 4-5 specific campaign goals (not numbers/metrics) focused on the services being rendered:
 
 Artist: ${clientDetails.artistName}
 Song: "${clientDetails.songTitle}"
 Genre: ${clientDetails.genre}
-Artist Tier: ${clientDetails.tier || 'Not specified'}
+Artist Tier: ${clientDetails.tier || 'Emerging'}
 Release Date: ${new Date(clientDetails.releaseDate).toLocaleDateString()}
 
-Active Services:
-${activeServices.map(service => `- ${service.name}: ${service.details} - $${service.price}`).join('\n')}
+Selected Services:
+${activeServices.map(service => `- ${service.name}: ${service.details}`).join('\n')}
 
-Total Campaign Cost: $${totalAmount.toLocaleString()}
-
-Generate 5 campaign objectives based on the selected services, genre, and artist tier. Make them specific and actionable for ${clientDetails.genre} music promotion. Consider the artist's tier (${clientDetails.tier || 'emerging'}) when setting realistic expectations and goals.
-
-Also generate campaign goals that are realistic and genre-specific for ${clientDetails.genre} artists at the ${clientDetails.tier || 'emerging'} level.
+Make goals specific to the services selected and avoid specific numbers. Focus on qualitative outcomes like "drive targeted views," "boost streaming growth," "generate new listeners," etc.
 
 Keep the tone professional but energetic, matching Artist Influence's brand.`;
 
@@ -116,7 +122,7 @@ async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiC
       from: 'Artist Influence <proposals@artistinfluence.com>',
       to: [recipientEmail],
       subject: `Campaign Proposal: ${clientDetails.artistName} - ${clientDetails.songTitle}`,
-      html: emailHtml,
+      text: emailHtml,
     }),
   });
 
@@ -124,74 +130,47 @@ async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiC
 }
 
 function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil: Date, campaignData: any): string {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #000, #F23041); color: white; padding: 30px; text-align: center; margin-bottom: 30px; }
-            .title { font-family: Impact, sans-serif; font-size: 32px; margin: 0; letter-spacing: 2px; }
-            .section { margin-bottom: 30px; }
-            .section-title { font-family: Impact, sans-serif; font-size: 18px; color: #F23041; margin-bottom: 15px; letter-spacing: 1px; }
-            .cost-breakdown { background: #f8f9fa; padding: 20px; border-left: 4px solid #F23041; }
-            .total { font-size: 24px; font-weight: bold; color: #F23041; text-align: center; padding: 20px; border: 2px solid #F23041; margin: 20px 0; }
-            .disclaimer { font-size: 12px; color: #666; background: #f8f9fa; padding: 15px; margin-top: 30px; }
-            ul { padding-left: 20px; }
-            li { margin-bottom: 8px; }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <div class="title">📄 CAMPAIGN PROPOSAL</div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">PREPARED BY:</div>
-            <p>Artist Influence</p>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">FOR:</div>
-            <p>${clientDetails.artistName} – "${clientDetails.songTitle}"</p>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">VALID UNTIL:</div>
-            <p>${validUntil.toLocaleDateString('en-US')}</p>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">🎯 CAMPAIGN GOALS & OBJECTIVES</div>
-            <div style="white-space: pre-line;">${aiContent}</div>
-        </div>
-        
-        <div class="total">
-            Total Campaign Investment: $${calculateTotalAmount(campaignData).toLocaleString()}
-        </div>
-        
-        <div class="section">
-            <div class="section-title">📦 SERVICE DESCRIPTIONS</div>
-            <p><strong>SPOTIFY PLAYLISTING:</strong> We run fully organic Spotify campaigns that place your music on third-party playlists curated for your genre, helping you reach real listeners—not bots—and trigger Spotify's algorithm.</p>
-            <p><strong>SOUNDCLOUD REPOSTS:</strong> We tap into an underground network of verified SoundCloud artists and labels to organically repost your track across genre-specific communities.</p>
-            <p><strong>YOUTUBE ADVERTISING:</strong> Our YouTube ad campaigns turn music videos into highly optimized promotional assets using strategic international targeting and our proprietary view-to-engagement ratio engine.</p>
-            <p><strong>INSTAGRAM SEEDING:</strong> Instagram seeding places your music on genre-aligned fan pages where your target audience already hangs out.</p>
-            <p><strong>META & TIKTOK ADS:</strong> Our social media campaigns deliver targeted reach through optimized ad placements across Facebook, Instagram, and TikTok.</p>
-        </div>
-        
-        <div class="disclaimer">
-            <div class="section-title">⚠️ DISCLAIMER</div>
-            <p>Artist Influence, LLC makes every attempt to ensure the accuracy and reliability of services offered in this document. The information is provided "as is" without warranty. Services are subject to availability and adjustment based on market conditions.</p>
-            <p>Please do not share this document externally unless you are legally bound in the assistance and wellbeing of ${clientDetails.artistName} or the "${clientDetails.songTitle}" campaign.</p>
-        </div>
-        
-        <div style="text-align: center; margin-top: 40px; padding: 20px; background: #F23041; color: white;">
-            <p style="margin: 0; font-weight: bold;">Ready to proceed? Contact your sales representative to finalize this campaign.</p>
-        </div>
-    </body>
-    </html>
-  `;
+  const activeServices = getActiveServices(campaignData);
+  const totalAmount = calculateTotalAmount(campaignData);
+  
+  // Generate cost breakdown
+  const costBreakdown = activeServices.map(service => 
+    `${service.name}: ${service.details} - $${service.price.toLocaleString()}`
+  ).join('\n');
+  
+  // Generate service descriptions for selected services only
+  const serviceDescriptions = getServiceDescriptions(campaignData);
+  
+  return `📄 CAMPAIGN PROPOSAL
+
+PREPARED BY: Artist Influence
+FOR: ${clientDetails.artistName} – "${clientDetails.songTitle}"
+VALID UNTIL: ${validUntil.toLocaleDateString('en-US')}
+
+🎯 CAMPAIGN GOALS & OBJECTIVES
+
+${aiContent}
+
+💰 COST BREAKDOWN
+
+${costBreakdown}
+
+Total Campaign Investment: $${totalAmount.toLocaleString()}
+
+📦 SERVICE DESCRIPTIONS
+
+${serviceDescriptions}
+
+⚠️ DISCLAIMER
+
+Artist Influence, LLC makes every attempt to ensure the accuracy and reliability of services offered in this document. The information is provided "as is" without warranty. Services are subject to availability and adjustment based on market conditions.
+
+Please do not share this document externally unless you are legally bound in the assistance and wellbeing of ${clientDetails.artistName} or the "${clientDetails.songTitle}" campaign.
+
+Ready to proceed? Contact your sales representative to finalize this campaign.
+
+Artist Influence
+https://artistinfluence.com`;
 }
 
 function getActiveServices(campaignData: any) {
@@ -238,6 +217,32 @@ function getActiveServices(campaignData: any) {
   }
   
   return services;
+}
+
+function getServiceDescriptions(campaignData: any): string {
+  const descriptions = [];
+  
+  if (campaignData.spotifyPlaylisting?.enabled) {
+    descriptions.push(`SPOTIFY PLAYLISTING: We run fully organic Spotify campaigns that place your music on third-party playlists curated for your genre, helping you reach real listeners—not bots—and trigger Spotify's algorithm. Our network includes genre-specific curators who manually review and place tracks based on quality and fit.`);
+  }
+  
+  if (campaignData.soundcloudReposts?.enabled) {
+    descriptions.push(`SOUNDCLOUD REPOSTS: We tap into an underground network of verified SoundCloud artists and labels to organically repost your track across genre-specific communities. This service builds credibility and exposure within your target music scene.`);
+  }
+  
+  if (campaignData.youtubeAds?.enabled) {
+    descriptions.push(`YOUTUBE ADVERTISING: Our YouTube ad campaigns turn music videos into highly optimized promotional assets using strategic international targeting and our proprietary view-to-engagement ratio engine. We focus on reaching viewers most likely to engage with your music and follow your channel.`);
+  }
+  
+  if (campaignData.instagramSeeding?.enabled) {
+    descriptions.push(`INSTAGRAM SEEDING: Instagram seeding places your music on genre-aligned fan pages where your target audience already hangs out. We work with established pages that have engaged followings in your specific music niche.`);
+  }
+  
+  if (campaignData.metaTiktokAds?.enabled) {
+    descriptions.push(`META & TIKTOK ADS: Our social media campaigns deliver targeted reach through optimized ad placements across Facebook, Instagram, and TikTok. We create engaging creative content that drives streams, follows, and algorithmic growth.`);
+  }
+  
+  return descriptions.join('\n\n');
 }
 
 function calculateTotalAmount(campaignData: any): number {
