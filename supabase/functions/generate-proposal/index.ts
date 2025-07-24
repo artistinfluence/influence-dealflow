@@ -140,13 +140,18 @@ Total Investment: $[Sum]
 
 📋 DISCLAIMER AND DOCUMENT USAGE
 
-This proposal is proprietary and confidential to Artist Influence LLC. All information contained herein is for the exclusive use of ${clientDetails.artistName} and their authorized representatives. This document may not be reproduced, distributed, or disclosed to any third party without prior written consent from Artist Influence. 
+Artist Influence, LLC makes every attempt to be sure of the accuracy and reliability of services offered in this document. The information is, however, provided "as is" without a warranty of any kind.
 
-All services outlined are subject to availability and current market conditions. Campaign performance goals are estimates based on historical data and industry benchmarks. While we maintain high standards and proven methodologies, specific outcomes cannot be guaranteed due to the dynamic nature of digital marketing platforms and audience engagement patterns.
+Artist Influence, LLC shall not be held liable for any loss or damage of any nature (direct, indirect, consequential, or other) as a result of our services offered and performed. We do not guarantee any results unless stated and agreed upon by all parties involved.
 
-Pricing is valid for 14 days from the date of this proposal. All services require a signed agreement and 50% deposit to commence. Campaign timelines begin upon receipt of all required assets and approvals. Any changes to campaign scope or requirements may result in adjusted pricing and timelines.
+This document is tailored to and to be restricted only to ${clientDetails.artistName} and those who are legally bound in the assistance and wellbeing of ${clientDetails.artistName} (i.e. agents, booking, press, etc.) — Please do not share this document with parties not currently legally involved with ${clientDetails.artistName}.
 
-For questions regarding this proposal, please contact your Artist Influence representative directly.
+Artist Influence, LLC reserves the right to adjust pricing to meet the needs of the client or any factors otherwise.
+
+Please respect our privacy and do not share any information provided within this document with any other parties.
+
+Thank you.
+— The Artist Influence Team
 
 1. Maintain Internal Logic & Formatting:
 2. Ensure all price formatting is consistent.
