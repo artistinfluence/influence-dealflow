@@ -220,42 +220,13 @@ async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiC
 }
 
 function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil: Date, campaignData: any): string {
-  const activeServices = getActiveServices(campaignData);
-  const totalAmount = calculateTotalAmount(campaignData);
-  
-  // Generate cost breakdown
-  const costBreakdown = activeServices.map(service => 
-    `${service.name}: ${service.details} - $${service.price.toLocaleString()}`
-  ).join('\n');
-  
-  // Generate service descriptions for selected services only
-  const serviceDescriptions = getServiceDescriptions(campaignData);
-  
   return `📄 CAMPAIGN PROPOSAL
 
 PREPARED BY: Artist Influence
 FOR: ${clientDetails.artistName} – "${clientDetails.songTitle}"
 VALID UNTIL: ${validUntil.toLocaleDateString('en-US')}
 
-🎯 CAMPAIGN GOALS & OBJECTIVES
-
 ${aiContent}
-
-💰 COST BREAKDOWN
-
-${costBreakdown}
-
-Total Campaign Investment: $${totalAmount.toLocaleString()}
-
-📦 SERVICE DESCRIPTIONS
-
-${serviceDescriptions}
-
-⚠️ DISCLAIMER
-
-Artist Influence, LLC makes every attempt to ensure the accuracy and reliability of services offered in this document. The information is provided "as is" without warranty. Services are subject to availability and adjustment based on market conditions.
-
-Please do not share this document externally unless you are legally bound in the assistance and wellbeing of ${clientDetails.artistName} or the "${clientDetails.songTitle}" campaign.
 
 Artist Influence
 https://artistinfluence.com`;
