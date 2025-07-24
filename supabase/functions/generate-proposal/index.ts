@@ -115,7 +115,7 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
     'SoundCloud Reposts': 'We tap into an underground network of verified SoundCloud artists and labels to organically repost your track across genre-specific communities. With over 50 million active U.S.-based listeners reached through our repost groups, this service connects your music with passionate fans who actively seek new sounds. Campaigns are fully transparent, trackable, and optimized to foster genuine fan engagement rather than passive plays.',
     'YouTube Advertising': 'Our YouTube ad campaigns turn music videos into highly optimized promotional assets using strategic international targeting and our proprietary view-to-engagement ratio engine. By tapping into global markets with ultra-low CPVs, we maximize reach while ensuring your video resonates with viewers. Whether you\'re focused on subscribers, long-form engagement, or workarounds for unapproved videos, we tailor every campaign for high impact and transparent reporting.',
     'Instagram Seeding': 'Instagram seeding places your music on genre-aligned fan pages—like EDM edits or festival reels—where your target audience already hangs out. We handpick creators (not recycled influencers) for each campaign to ensure relevance and cost-efficiency, maximizing ROI and discovery. Every post tags the artist, links the sound, and is tracked via a live dashboard so you can see real-time results.',
-    'Meta Ads': 'Our Meta Video Ads service turns your mix highlights and vertical edits into thumb-stopping paid placements across Facebook and Instagram feeds, Stories, and Reels. We build layered interest, behavior, and look-alike audiences drawn from your past viewers and genre peers, then continually A/B test creatives, hooks, and copy to lock in the lowest possible CPVs in high-value territories. Campaigns include real-time budget pacing, exclusion of bot-heavy regions, and remarketing to warm fans—driving qualified traffic back to YouTube, Spotify, or your next drop. Weekly reporting provides full delivery metrics plus audience insights, so you always know where growth is coming from.',
+    'Meta & TikTok Ads': 'Our Meta Video Ads service turns your mix highlights and vertical edits into thumb-stopping paid placements across Facebook and Instagram feeds, Stories, and Reels. We build layered interest, behavior, and look-alike audiences drawn from your past viewers and genre peers, then continually A/B test creatives, hooks, and copy to lock in the lowest possible CPVs in high-value territories. Campaigns include real-time budget pacing, exclusion of bot-heavy regions, and remarketing to warm fans—driving qualified traffic back to YouTube, Spotify, or your next drop. Weekly reporting provides full delivery metrics plus audience insights, so you always know where growth is coming from.',
     'TikTok Spark Ads': 'Our Spark Ads service turns native TikTok content—either your own or our recommended creatives—into powerful ads served directly in the For You feed. These campaigns deliver best-in-class CPVs (as low as $0.03), with precision targeting for playlisting, ticket sales, or streaming. We optimize your campaign daily by scaling top-performing creatives and provide clear weekly reporting and final data exports.'
   };
   
@@ -138,8 +138,15 @@ Total Investment: $[Sum]
 📦 SERVICE DESCRIPTIONS
 [Use ONLY the exact service descriptions provided below. Do NOT paraphrase, shorten, or summarize. Match original formatting exactly.]
 
-DISCLAIMER AND DOCUMENT USAGE
-[Use static disclaimer block exactly as written, updated only with the artist name.]
+📋 DISCLAIMER AND DOCUMENT USAGE
+
+This proposal is proprietary and confidential to Artist Influence LLC. All information contained herein is for the exclusive use of ${clientDetails.artistName} and their authorized representatives. This document may not be reproduced, distributed, or disclosed to any third party without prior written consent from Artist Influence. 
+
+All services outlined are subject to availability and current market conditions. Campaign performance goals are estimates based on historical data and industry benchmarks. While we maintain high standards and proven methodologies, specific outcomes cannot be guaranteed due to the dynamic nature of digital marketing platforms and audience engagement patterns.
+
+Pricing is valid for 14 days from the date of this proposal. All services require a signed agreement and 50% deposit to commence. Campaign timelines begin upon receipt of all required assets and approvals. Any changes to campaign scope or requirements may result in adjusted pricing and timelines.
+
+For questions regarding this proposal, please contact your Artist Influence representative directly.
 
 1. Maintain Internal Logic & Formatting:
 2. Ensure all price formatting is consistent.
@@ -166,11 +173,10 @@ Total Investment: $${calculateTotalAmount(campaignData)}
 
 EXACT SERVICE DESCRIPTIONS TO USE:
 ${activeServices.map(service => {
-  const serviceName = service.name === 'Meta & TikTok Ads' ? 'Meta Ads' : service.name;
-  return `${serviceName.toUpperCase()}\n${serviceDescriptions[serviceName] || 'Service description not available'}`;
+  return `${service.name.toUpperCase()}\n${serviceDescriptions[service.name] || 'Service description not available'}`;
 }).join('\n\n')}
 
-Generate a professional campaign proposal following the exact structure above. Keep campaign goals to 1 bullet point per service maximum. Use ONLY the exact service descriptions provided above and do not modify pricing.`;
+Generate a professional campaign proposal following the exact structure above. Keep campaign goals to 1 bullet point per service maximum. Use ONLY the exact service descriptions provided above and do not modify pricing. CRITICAL: Use the complete disclaimer text exactly as provided - do not shorten, summarize, or modify it in any way.`;
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
