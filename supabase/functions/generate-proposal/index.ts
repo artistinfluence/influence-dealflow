@@ -220,6 +220,20 @@ async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiC
 }
 
 function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil: Date, campaignData: any): string {
+  const commissions = calculateCommissions(campaignData);
+  const commissionTotal = Object.values(commissions).reduce((sum: number, amount: number) => sum + amount, 0);
+  
+  const commissionBreakdown = `
+💰 SALESPERSON COMMISSION BREAKDOWN
+
+YouTube Ads: $${commissions.youtubeAds}
+Spotify Playlisting: $${commissions.spotifyPlaylisting}
+SoundCloud Reposts: $${commissions.soundcloudReposts}
+Instagram Seeding: $${commissions.instagramSeeding}
+Meta & TikTok Ads: $${commissions.metaTiktokAds}
+
+TOTAL COMMISSION: $${commissionTotal}`;
+
   return `📄 CAMPAIGN PROPOSAL
 
 PREPARED BY: Artist Influence
@@ -227,6 +241,7 @@ FOR: ${clientDetails.artistName} – "${clientDetails.songTitle}"
 VALID UNTIL: ${validUntil.toLocaleDateString('en-US')}
 
 ${aiContent}
+${commissionBreakdown}
 
 Artist Influence
 https://artistinfluence.com`;
@@ -335,4 +350,40 @@ function calculateTotalAmount(campaignData: any): number {
   }
   
   return total;
+}
+
+function calculateCommissions(campaignData: any) {
+  const commissions = {
+    youtubeAds: 0,
+    spotifyPlaylisting: 0,
+    soundcloudReposts: 0,
+    instagramSeeding: 0,
+    metaTiktokAds: 0
+  };
+
+  if (campaignData.youtubeAds?.enabled) {
+    commissions.youtubeAds = Math.round((campaignData.youtubeAds.totalPrice || 0) * 0.3);
+  }
+  if (campaignData.spotifyPlaylisting?.enabled) {
+    commissions.spotifyPlaylisting = Math.round((campaignData.spotifyPlaylisting.price || 0) * 0.3);
+  }
+  if (campaignData.soundcloudReposts?.enabled) {
+    commissions.soundcloudReposts = Math.round((campaignData.soundcloudReposts.price || 0) * 0.3);
+  }
+  if (campaignData.instagramSeeding?.enabled) {
+    commissions.instagramSeeding = Math.round((campaignData.instagramSeeding.price || 0) * 0.3);
+  }
+  if (campaignData.metaTiktokAds?.enabled) {
+    commissions.metaTiktokAds = Math.round((campaignData.metaTiktokAds.price || 0) * 0.3);
+  }
+
+  // Apply discount to commissions if enabled
+  if (campaignData.discount?.enabled && campaignData.discount?.percentage > 0) {
+    const discountMultiplier = (1 - campaignData.discount.percentage / 100);
+    Object.keys(commissions).forEach(key => {
+      commissions[key] = Math.round(commissions[key] * discountMultiplier);
+    });
+  }
+
+  return commissions;
 }
