@@ -235,7 +235,7 @@ function getActiveServices(campaignData: any) {
   }
   
   if (campaignData.instagramSeeding?.enabled) {
-    const budget = Math.round((campaignData.instagramSeeding.price || 0) * 0.3);
+    const budget = Math.round((campaignData.instagramSeeding.price || 0) * 0.7);
     services.push({
       name: 'Instagram Seeding',
       details: `$${budget} budget`,
@@ -244,7 +244,7 @@ function getActiveServices(campaignData: any) {
   }
   
   if (campaignData.metaTiktokAds?.enabled) {
-    const budget = Math.round((campaignData.metaTiktokAds.price || 0) * 0.3);
+    const budget = Math.round((campaignData.metaTiktokAds.price || 0) * 0.7);
     services.push({
       name: 'Meta & TikTok Ads',
       details: `${campaignData.metaTiktokAds.platform} - $${budget} budget`,
