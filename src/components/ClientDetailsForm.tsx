@@ -42,7 +42,7 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
           <Input
             placeholder="Artist or band name"
             value={details.artistName}
-            onChange={(e) => onUpdate({ ...details, artistName: e.target.value.trim() })}
+            onChange={(e) => onUpdate({ ...details, artistName: e.target.value })}
             className="text-center bg-card border-border focus:ring-primary"
             maxLength={100}
           />
@@ -52,7 +52,7 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
           <Input
             placeholder="Track or project name"
             value={details.songTitle}
-            onChange={(e) => onUpdate({ ...details, songTitle: e.target.value.trim() })}
+            onChange={(e) => onUpdate({ ...details, songTitle: e.target.value })}
             className="text-center bg-card border-border focus:ring-primary"
             maxLength={100}
           />
@@ -62,7 +62,7 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
           <Input
             placeholder="Genre (e.g., EDM, Hip-Hop, Pop, etc.)"
             value={details.genre}
-            onChange={(e) => onUpdate({ ...details, genre: e.target.value.trim() })}
+            onChange={(e) => onUpdate({ ...details, genre: e.target.value })}
             className="text-center bg-card border-border focus:ring-primary"
             maxLength={50}
           />
@@ -105,7 +105,15 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
               <Calendar
                 mode="single"
                 selected={details.releaseDate}
-                onSelect={(date) => date && onUpdate({ ...details, releaseDate: date })}
+                onSelect={(date) => {
+                  if (date) {
+                    onUpdate({ ...details, releaseDate: date });
+                    // Close the popover by triggering a click outside
+                    setTimeout(() => {
+                      document.body.click();
+                    }, 100);
+                  }
+                }}
                 initialFocus
                 className="p-3 pointer-events-auto"
               />

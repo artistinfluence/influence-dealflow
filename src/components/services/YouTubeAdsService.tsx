@@ -147,7 +147,7 @@ const YouTubeAdsService: React.FC<YouTubeAdsServiceProps> = ({ sections, onUpdat
       <Button
         onClick={addSection}
         variant="outline"
-        className="w-full center-content gap-2 bg-card border-border hover:bg-accent"
+        className="w-full center-content gap-2 bg-card border-border hover:bg-accent whitespace-nowrap"
       >
         <Plus className="h-4 w-4" />
         ADD ANOTHER AD TYPE
