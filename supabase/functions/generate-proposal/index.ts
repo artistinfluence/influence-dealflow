@@ -264,11 +264,15 @@ https://artistinfluence.com`;
 function getActiveServices(campaignData: any) {
   const services = [];
   
-  if (campaignData.youtubeAds?.enabled) {
-    services.push({
-      name: 'YouTube Advertising',
-      details: `${campaignData.youtubeAds.sections?.length || 0} campaign(s)`,
-      price: campaignData.youtubeAds.totalPrice || 0
+  if (campaignData.youtubeAds?.enabled && campaignData.youtubeAds.sections) {
+    campaignData.youtubeAds.sections.forEach((section: any, index: number) => {
+      if (section.platform && section.price > 0) {
+        services.push({
+          name: 'YouTube Advertising',
+          details: `${section.platform} - ${section.targetViews.toLocaleString()} views`,
+          price: section.price
+        });
+      }
     });
   }
   
