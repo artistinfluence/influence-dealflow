@@ -95,7 +95,8 @@ DISCLAIMER AND DOCUMENT USAGE
 6. Keep a professional but music-industry-savvy tone.
 7. Emphasize value, targeting, momentum, and strategic rollout.
 8. Avoid redundant phrasing or overt sales language.
-9. Proposal must be ready for direct copy-paste into an email or PDF.
+9. Write the proposal ABOUT the artist in third person, not TO the artist. Do not use "your" or "you" - refer to the artist by name.
+10. Proposal must be ready for direct copy-paste into an email or PDF.
 
 Artist Information:
 - Name: ${clientDetails.artistName}
@@ -202,8 +203,6 @@ Artist Influence, LLC makes every attempt to ensure the accuracy and reliability
 
 Please do not share this document externally unless you are legally bound in the assistance and wellbeing of ${clientDetails.artistName} or the "${clientDetails.songTitle}" campaign.
 
-Ready to proceed? Contact your sales representative to finalize this campaign.
-
 Artist Influence
 https://artistinfluence.com`;
 }
@@ -236,17 +235,19 @@ function getActiveServices(campaignData: any) {
   }
   
   if (campaignData.instagramSeeding?.enabled) {
+    const budget = Math.round((campaignData.instagramSeeding.price || 0) * 0.3);
     services.push({
       name: 'Instagram Seeding',
-      details: `$${campaignData.instagramSeeding.budget || 0} budget`,
+      details: `$${budget} budget`,
       price: campaignData.instagramSeeding.price || 0
     });
   }
   
   if (campaignData.metaTiktokAds?.enabled) {
+    const budget = Math.round((campaignData.metaTiktokAds.price || 0) * 0.3);
     services.push({
       name: 'Meta & TikTok Ads',
-      details: `${campaignData.metaTiktokAds.platform} - $${campaignData.metaTiktokAds.budget || 0} budget`,
+      details: `${campaignData.metaTiktokAds.platform} - $${budget} budget`,
       price: campaignData.metaTiktokAds.price || 0
     });
   }
@@ -297,6 +298,11 @@ function calculateTotalAmount(campaignData: any): number {
   }
   if (campaignData.metaTiktokAds?.enabled) {
     total += campaignData.metaTiktokAds.price || 0;
+  }
+  
+  // Apply discount if enabled
+  if (campaignData.discount?.enabled && campaignData.discount?.percentage > 0) {
+    total = total * (1 - campaignData.discount.percentage / 100);
   }
   
   return total;

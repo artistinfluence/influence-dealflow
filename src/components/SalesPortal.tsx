@@ -33,13 +33,21 @@ const SalesPortal: React.FC = () => {
   const calculateCommissions = (campaignData: CampaignData): CommissionData => {
     const calculateGrossCommission = (price: number) => price * 0.2;
     const calculateNetCommission = (price: number) => price * 0.3 * 0.2;
+    
+    // Apply discount to prices if enabled
+    const applyDiscount = (price: number) => {
+      if (campaignData.discount.enabled && campaignData.discount.percentage > 0) {
+        return price * (1 - campaignData.discount.percentage / 100);
+      }
+      return price;
+    };
 
     return {
-      youtubeAds: campaignData.youtubeAds.enabled ? calculateGrossCommission(campaignData.youtubeAds.totalPrice) : 0,
-      spotifyPlaylisting: campaignData.spotifyPlaylisting.enabled ? calculateGrossCommission(campaignData.spotifyPlaylisting.price) : 0,
-      soundcloudReposts: campaignData.soundcloudReposts.enabled ? calculateGrossCommission(campaignData.soundcloudReposts.price) : 0,
-      instagramSeeding: campaignData.instagramSeeding.enabled ? calculateNetCommission(campaignData.instagramSeeding.price) : 0,
-      metaTiktokAds: campaignData.metaTiktokAds.enabled ? calculateNetCommission(campaignData.metaTiktokAds.price) : 0,
+      youtubeAds: campaignData.youtubeAds.enabled ? calculateGrossCommission(applyDiscount(campaignData.youtubeAds.totalPrice)) : 0,
+      spotifyPlaylisting: campaignData.spotifyPlaylisting.enabled ? calculateGrossCommission(applyDiscount(campaignData.spotifyPlaylisting.price)) : 0,
+      soundcloudReposts: campaignData.soundcloudReposts.enabled ? calculateGrossCommission(applyDiscount(campaignData.soundcloudReposts.price)) : 0,
+      instagramSeeding: campaignData.instagramSeeding.enabled ? calculateNetCommission(applyDiscount(campaignData.instagramSeeding.price)) : 0,
+      metaTiktokAds: campaignData.metaTiktokAds.enabled ? calculateNetCommission(applyDiscount(campaignData.metaTiktokAds.price)) : 0,
     };
   };
 

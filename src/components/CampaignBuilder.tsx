@@ -1,5 +1,7 @@
 import React from 'react';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { CampaignData } from '@/types/campaign';
 import YouTubeAdsService, { YouTubeAdSection } from './services/YouTubeAdsService';
 import SpotifyPlaylistingService from './services/SpotifyPlaylistingService';
@@ -46,6 +48,10 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
 
   const handleMetaTikTokUpdate = (platform: string, budget: number) => {
     updateService('metaTiktokAds', { platform, budget, price: budget });
+  };
+
+  const handleDiscountUpdate = (percentage: number) => {
+    updateService('discount', { percentage });
   };
 
   return (
@@ -170,6 +176,45 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
               budget={campaignData.metaTiktokAds.budget}
               onUpdate={handleMetaTikTokUpdate}
             />
+          )}
+        </div>
+
+        {/* Discount Section */}
+        <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h3 className="text-lg font-bebas tracking-wide">
+                CAMPAIGN DISCOUNT
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Apply an overall discount to the campaign (affects sales commission)
+              </p>
+            </div>
+            <Switch
+              checked={campaignData.discount.enabled}
+              onCheckedChange={() => toggleService('discount')}
+            />
+          </div>
+          
+          {campaignData.discount.enabled && (
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="discount-percentage">Discount Percentage</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="discount-percentage"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={campaignData.discount.percentage || ''}
+                    onChange={(e) => handleDiscountUpdate(Number(e.target.value))}
+                    placeholder="Enter discount percentage"
+                    className="w-32"
+                  />
+                  <span className="text-sm text-muted-foreground">%</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

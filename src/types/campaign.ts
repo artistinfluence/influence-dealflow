@@ -27,6 +27,10 @@ export interface CampaignData {
     budget: number;
     price: number;
   };
+  discount: {
+    enabled: boolean;
+    percentage: number;
+  };
 }
 
 export const getDefaultCampaignData = (): CampaignData => ({
@@ -60,5 +64,9 @@ export const getDefaultCampaignData = (): CampaignData => ({
     platform: '',
     budget: 0,
     price: 0,
+  },
+  discount: {
+    enabled: false,
+    percentage: 0,
   },
 });
