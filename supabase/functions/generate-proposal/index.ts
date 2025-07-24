@@ -55,32 +55,67 @@ serve(async (req) => {
 
 async function generateProposalContent(clientDetails: any, campaignData: any) {
   const activeServices = getActiveServices(campaignData);
-  const totalAmount = calculateTotalAmount(campaignData);
   
-  const prompt = `Generate a professional campaign proposal for Artist Influence. Create two sections:
+  const serviceDescriptions = {
+    'Spotify Playlisting': 'We run fully organic Spotify campaigns that place your music on third-party playlists curated for your genre, helping you reach real listeners—not bots—and trigger Spotify\'s algorithm. Each campaign is designed for maximum discovery, often resulting in Discovery Weekly or Radio placements, with strong performance in both U.S. and global markets. Stream goals are guaranteed, and every campaign includes weekly reporting, performance tracking, and strategic playlist placement to boost saves, followers, and engagement.',
+    'SoundCloud Reposts': 'We tap into an underground network of verified SoundCloud artists and labels to organically repost your track across genre-specific communities. With over 50 million active U.S.-based listeners reached through our repost groups, this service connects your music with passionate fans who actively seek new sounds. Campaigns are fully transparent, trackable, and optimized to foster genuine fan engagement rather than passive plays.',
+    'YouTube Advertising': 'Our YouTube ad campaigns turn music videos into highly optimized promotional assets using strategic international targeting and our proprietary view-to-engagement ratio engine. By tapping into global markets with ultra-low CPVs, we maximize reach while ensuring your video resonates with viewers. Whether you\'re focused on subscribers, long-form engagement, or workarounds for unapproved videos, we tailor every campaign for high impact and transparent reporting.',
+    'Instagram Seeding': 'Instagram seeding places your music on genre-aligned fan pages—like EDM edits or festival reels—where your target audience already hangs out. We handpick creators (not recycled influencers) for each campaign to ensure relevance and cost-efficiency, maximizing ROI and discovery. Every post tags the artist, links the sound, and is tracked via a live dashboard so you can see real-time results.',
+    'Meta Ads': 'Our Meta Video Ads service turns your mix highlights and vertical edits into thumb-stopping paid placements across Facebook and Instagram feeds, Stories, and Reels. We build layered interest, behavior, and look-alike audiences drawn from your past viewers and genre peers, then continually A/B test creatives, hooks, and copy to lock in the lowest possible CPVs in high-value territories. Campaigns include real-time budget pacing, exclusion of bot-heavy regions, and remarketing to warm fans—driving qualified traffic back to YouTube, Spotify, or your next drop. Weekly reporting provides full delivery metrics plus audience insights, so you always know where growth is coming from.',
+    'TikTok Spark Ads': 'Our Spark Ads service turns native TikTok content—either your own or our recommended creatives—into powerful ads served directly in the For You feed. These campaigns deliver best-in-class CPVs (as low as $0.03), with precision targeting for playlisting, ticket sales, or streaming. We optimize your campaign daily by scaling top-performing creatives and provide clear weekly reporting and final data exports.'
+  };
+  
+  const prompt = `The Proposal Formatter Agent takes pre-provided campaign inputs — including artist information, genre, campaign start date, artist tier, and a list of selected services with associated goals and pricing — and reformats them into a professionally structured proposal email for client communication. The proposal should feel custom-written, yet follow a consistent internal structure and style used by Artist Influence.
 
-CAMPAIGN OBJECTIVES:
-Write a brief 2-3 sentence overview describing the artist and their latest release, then explain how this campaign will support their goals. Use this format as inspiration:
+Key Responsibilities:
+1. Campaign Overview Personalization:
+2. Use the provided artist name, genre, song(s), campaign timeline, and tier (Emerging, Mid, Established). Reference the artist's online presence (Spotify, socials, bios, etc.) to personalize the overview with tone, key achievements, or musical style. Focus on aligning Artist Influence's services with the artist's momentum, target audience, and upcoming release cadence.
+3. Standard Structure Formatting:
+4. Output must follow the exact structure below (with emojis, headers, and spacing):
 
-"${clientDetails.artistName} is a ${clientDetails.tier?.toLowerCase() || 'emerging'} ${clientDetails.genre} artist. Their latest release, "${clientDetails.songTitle}", [describe the style/sound briefly]. To support the rollout, this campaign will [explain strategy based on selected services].
+🎯 CAMPAIGN GOALS
+[2–5 sentence paragraph personalized to artist context and release plan.]
+- Bullet point goals based on each included service.
 
-We'll combine [list selected services] to maximize ROI while maintaining organic alignment with ${clientDetails.artistName}'s sonic identity."
+💰 COST BREAKDOWN
+[List each service name, quantity/type, and price in consistent format.]
+Total Investment: $[Sum]
 
-CAMPAIGN GOALS:
-Generate 1 bullet point per service selected (maximum 5 goals) that are specific to each service being rendered. Focus on context and value, not filling space:
+📦 SERVICE DESCRIPTIONS
+[Use ONLY the exact service descriptions provided below. Do NOT paraphrase, shorten, or summarize. Match original formatting exactly.]
 
-Artist: ${clientDetails.artistName}
-Song: "${clientDetails.songTitle}"
-Genre: ${clientDetails.genre}
-Artist Tier: ${clientDetails.tier || 'Emerging'}
-Release Date: ${new Date(clientDetails.releaseDate).toLocaleDateString()}
+DISCLAIMER AND DOCUMENT USAGE
+[Use static disclaimer block exactly as written, updated only with the artist name.]
 
-Selected Services:
-${activeServices.map(service => `- ${service.name}: ${service.details}`).join('\n')}
+1. Maintain Internal Logic & Formatting:
+2. Ensure all price formatting is consistent.
+3. Do not adjust any service prices or goals — use them exactly as provided.
+4. Include only the relevant service descriptions from those provided below.
+5. Tone and Style:
+6. Keep a professional but music-industry-savvy tone.
+7. Emphasize value, targeting, momentum, and strategic rollout.
+8. Avoid redundant phrasing or overt sales language.
+9. Proposal must be ready for direct copy-paste into an email or PDF.
 
-Make goals specific to the services selected and avoid specific numbers. Focus on qualitative outcomes like "drive targeted views," "boost streaming growth," "generate new listeners," etc.
+Artist Information:
+- Name: ${clientDetails.artistName}
+- Genre: ${clientDetails.genre}
+- Song/Release: ${clientDetails.songTitle}
+- Campaign Start: ${clientDetails.campaignStart}
+- Artist Tier: ${clientDetails.artistTier}
 
-Keep the tone professional but energetic, matching Artist Influence's brand.`;
+Selected Services and Pricing:
+${activeServices.map(service => `- ${service.name}: ${service.details} — $${service.price}`).join('\n')}
+
+Total Investment: $${calculateTotalAmount(campaignData)}
+
+EXACT SERVICE DESCRIPTIONS TO USE:
+${activeServices.map(service => {
+  const serviceName = service.name === 'Meta & TikTok Ads' ? 'Meta Ads' : service.name;
+  return `${serviceName.toUpperCase()}\n${serviceDescriptions[serviceName] || 'Service description not available'}`;
+}).join('\n\n')}
+
+Generate a professional campaign proposal following the exact structure above. Keep campaign goals to 1 bullet point per service maximum. Use ONLY the exact service descriptions provided above and do not modify pricing.`;
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -93,12 +128,12 @@ Keep the tone professional but energetic, matching Artist Influence's brand.`;
       messages: [
         { 
           role: 'system', 
-          content: 'You are a professional music marketing strategist creating campaign proposals for Artist Influence. Be specific, actionable, and exciting while maintaining professionalism.' 
+          content: 'You are a professional music campaign proposal formatter. Follow the exact structure and formatting requirements provided in the prompt. Use ONLY the exact service descriptions provided in the prompt - do not create your own descriptions or modify them in any way.'
         },
         { role: 'user', content: prompt }
       ],
       temperature: 0.7,
-      max_tokens: 800,
+      max_tokens: 2000,
     }),
   });
 
