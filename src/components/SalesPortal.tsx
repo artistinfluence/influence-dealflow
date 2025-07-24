@@ -36,7 +36,7 @@ const SalesPortal: React.FC = () => {
     
     // Apply discount to prices if enabled
     const applyDiscount = (price: number) => {
-      if (campaignData.discount.enabled && campaignData.discount.percentage > 0) {
+      if (campaignData.discount?.enabled && campaignData.discount?.percentage > 0) {
         return price * (1 - campaignData.discount.percentage / 100);
       }
       return price;

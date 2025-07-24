@@ -73,7 +73,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
 
   const activeServices = getActiveServices();
   const subtotal = activeServices.reduce((sum, service) => sum + service.price, 0);
-  const discountAmount = campaignData.discount.enabled && campaignData.discount.percentage > 0 
+  const discountAmount = campaignData.discount?.enabled && campaignData.discount?.percentage > 0 
     ? subtotal * (campaignData.discount.percentage / 100) 
     : 0;
   const totalPrice = subtotal - discountAmount;
@@ -129,10 +129,10 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
             </span>
           </div>
           
-          {campaignData.discount.enabled && discountAmount > 0 && (
+          {campaignData.discount?.enabled && discountAmount > 0 && (
             <div className="flex items-center justify-between text-green-600">
               <span className="text-base font-bebas tracking-wide">
-                DISCOUNT ({campaignData.discount.percentage}%)
+                DISCOUNT ({campaignData.discount?.percentage}%)
               </span>
               <span className="text-base font-bebas">
                 -{formatCurrency(discountAmount)}

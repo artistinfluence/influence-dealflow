@@ -191,12 +191,12 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
               </p>
             </div>
             <Switch
-              checked={campaignData.discount.enabled}
+              checked={campaignData.discount?.enabled || false}
               onCheckedChange={() => toggleService('discount')}
             />
           </div>
           
-          {campaignData.discount.enabled && (
+          {campaignData.discount?.enabled && (
             <div className="space-y-3">
               <div className="space-y-2">
                 <Label htmlFor="discount-percentage">Discount Percentage</Label>
@@ -206,7 +206,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
                     type="number"
                     min="0"
                     max="100"
-                    value={campaignData.discount.percentage || ''}
+                    value={campaignData.discount?.percentage || ''}
                     onChange={(e) => handleDiscountUpdate(Number(e.target.value))}
                     placeholder="Enter discount percentage"
                     className="w-32"
