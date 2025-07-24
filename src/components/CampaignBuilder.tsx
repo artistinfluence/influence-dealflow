@@ -67,7 +67,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h3 className="text-lg font-bebas tracking-wide">
-                YOUTUBE ADVERTISING - GOOGLE & WEBSITE ADS
+                YOUTUBE ADVERTISING
               </h3>
             </div>
             <Switch
@@ -89,7 +89,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h3 className="text-lg font-bebas tracking-wide">
-                SPOTIFY PLAYLISTING - 100% ORGANIC PLAYLIST PLACEMENT
+                SPOTIFY PLAYLISTING
               </h3>
             </div>
             <Switch
@@ -111,7 +111,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h3 className="text-lg font-bebas tracking-wide">
-                SOUNDCLOUD REPOSTS - MASSIVE NETWORK DISTRIBUTION
+                SOUNDCLOUD REPOSTS
               </h3>
             </div>
             <Switch
@@ -133,7 +133,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h3 className="text-lg font-bebas tracking-wide">
-                INSTAGRAM SEEDING - AUDIO SEEDING & VIRAL CONTENT
+                INSTAGRAM SEEDING
               </h3>
             </div>
             <Switch
@@ -155,7 +155,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h3 className="text-lg font-bebas tracking-wide">
-                META & TIKTOK ADS - SOCIAL MEDIA CAMPAIGNS
+                META & TIKTOK ADS
               </h3>
             </div>
             <Switch

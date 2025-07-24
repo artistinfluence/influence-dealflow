@@ -95,6 +95,9 @@ const ProposalGeneration: React.FC<ProposalGenerationProps> = ({
                   <CheckCircle className="h-4 w-4" />
                   <span className="text-sm">Proposal sent successfully to {email}</span>
                 </div>
+                <div className="text-xs text-muted-foreground text-center p-2 bg-yellow-50 border border-yellow-200 rounded">
+                  ⚠️ Note: Check spam folder if email doesn't arrive within 5 minutes
+                </div>
                 <Button
                   onClick={() => window.location.reload()}
                   variant="outline"

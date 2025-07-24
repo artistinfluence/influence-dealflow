@@ -19,7 +19,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({ onLogin }) => {
     // Simulate a brief loading time for better UX
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (password === 'artistinfluence2025') {
+    if (password === 'collectshekels25') {
       localStorage.setItem('artistInfluenceAuth', 'true');
       onLogin();
     } else {

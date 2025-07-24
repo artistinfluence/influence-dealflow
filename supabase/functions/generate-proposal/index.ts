@@ -67,7 +67,7 @@ Write a brief 2-3 sentence overview describing the artist and their latest relea
 We'll combine [list selected services] to maximize ROI while maintaining organic alignment with ${clientDetails.artistName}'s sonic identity."
 
 CAMPAIGN GOALS:
-Generate 4-5 specific campaign goals (not numbers/metrics) focused on the services being rendered:
+Generate 1 bullet point per service selected (maximum 5 goals) that are specific to each service being rendered. Focus on context and value, not filling space:
 
 Artist: ${clientDetails.artistName}
 Song: "${clientDetails.songTitle}"
