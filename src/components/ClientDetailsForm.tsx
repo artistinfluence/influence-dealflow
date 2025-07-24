@@ -42,8 +42,9 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
           <Input
             placeholder="Artist or band name"
             value={details.artistName}
-            onChange={(e) => onUpdate({ ...details, artistName: e.target.value })}
+            onChange={(e) => onUpdate({ ...details, artistName: e.target.value.trim() })}
             className="text-center bg-card border-border focus:ring-primary"
+            maxLength={100}
           />
         </div>
 
@@ -51,8 +52,9 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
           <Input
             placeholder="Track or project name"
             value={details.songTitle}
-            onChange={(e) => onUpdate({ ...details, songTitle: e.target.value })}
+            onChange={(e) => onUpdate({ ...details, songTitle: e.target.value.trim() })}
             className="text-center bg-card border-border focus:ring-primary"
+            maxLength={100}
           />
         </div>
 
@@ -60,8 +62,9 @@ const ClientDetailsForm: React.FC<ClientDetailsFormProps> = ({ details, onUpdate
           <Input
             placeholder="Genre (e.g., EDM, Hip-Hop, Pop, etc.)"
             value={details.genre}
-            onChange={(e) => onUpdate({ ...details, genre: e.target.value })}
+            onChange={(e) => onUpdate({ ...details, genre: e.target.value.trim() })}
             className="text-center bg-card border-border focus:ring-primary"
+            maxLength={50}
           />
         </div>
 

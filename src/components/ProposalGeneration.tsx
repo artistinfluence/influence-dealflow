@@ -23,13 +23,31 @@ const ProposalGeneration: React.FC<ProposalGenerationProps> = ({
   const [lastResult, setLastResult] = useState<'success' | 'error' | null>(null);
 
   const handleGenerateProposal = async () => {
-    if (!isFormValid || !email) return;
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Invalid email format",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isFormValid) {
+      toast({
+        title: "Form incomplete",
+        description: "Please complete all required fields and select at least one service",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsGenerating(true);
     setLastResult(null);
 
     try {
-      const result = await generateProposal(clientDetails, campaignData, email);
+      const result = await generateProposal(clientDetails, campaignData, email.trim());
       
       setLastResult('success');
       toast({

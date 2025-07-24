@@ -20,20 +20,68 @@ serve(async (req) => {
   }
 
   try {
-    const { clientDetails, campaignData, recipientEmail } = await req.json();
+    // Basic rate limiting and logging
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    console.log(`Proposal request from IP: ${clientIP} at ${new Date().toISOString()}`);
+
+    const requestBody = await req.json();
+    
+    // Input validation
+    if (!requestBody || typeof requestBody !== 'object') {
+      console.error('Invalid request body:', requestBody);
+      return new Response(JSON.stringify({ error: 'Invalid request format' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { clientDetails, campaignData, recipientEmail } = requestBody;
+
+    // Validate required fields
+    if (!recipientEmail || typeof recipientEmail !== 'string' || !recipientEmail.includes('@')) {
+      console.error('Invalid email:', recipientEmail);
+      return new Response(JSON.stringify({ error: 'Valid email address is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!clientDetails?.artistName || !clientDetails?.songTitle) {
+      console.error('Missing client details:', clientDetails);
+      return new Response(JSON.stringify({ error: 'Artist name and song title are required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate that at least one service is enabled
+    const hasActiveServices = Object.values(campaignData || {}).some(
+      (service: any) => service?.enabled && ((service.price > 0) || (service.totalPrice > 0))
+    );
+
+    if (!hasActiveServices) {
+      console.error('No active services found:', campaignData);
+      return new Response(JSON.stringify({ error: 'At least one service must be enabled with valid pricing' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Sanitize email
+    const sanitizedEmail = recipientEmail.trim().toLowerCase();
 
     // Generate proposal content using OpenAI
     const proposalContent = await generateProposalContent(clientDetails, campaignData);
     
     // Send email via Resend
-    const emailResponse = await sendProposalEmail(recipientEmail, clientDetails, proposalContent, campaignData);
+    const emailResponse = await sendProposalEmail(sanitizedEmail, clientDetails, proposalContent, campaignData);
     
     // Track proposal in database
     const totalAmount = calculateTotalAmount(campaignData);
     await supabase.from('proposals').insert({
       artist_name: clientDetails.artistName,
       song_title: clientDetails.songTitle,
-      recipient_email: recipientEmail,
+      recipient_email: sanitizedEmail,
       total_amount: totalAmount,
       services_included: campaignData,
     });
@@ -43,9 +91,15 @@ serve(async (req) => {
     });
 
   } catch (error) {
+    // Security: Never expose internal error details
     console.error('Error in generate-proposal function:', error);
+    
+    // Log detailed error internally but return generic message
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Detailed error:', errorMessage);
+    
     return new Response(JSON.stringify({ 
-      error: error.message || 'Failed to generate proposal' 
+      error: 'Failed to process proposal request. Please check your input and try again.' 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
