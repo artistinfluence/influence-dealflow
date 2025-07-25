@@ -364,6 +364,17 @@ function calculateTotalAmount(campaignData: any): number {
 }
 
 function calculateCommissions(campaignData: any) {
+  const calculateGrossCommission = (price: number) => price * 0.2;
+  const calculateNetCommission = (price: number) => price * 0.3 * 0.2;
+  
+  // Apply discount to prices if enabled
+  const applyDiscount = (price: number) => {
+    if (campaignData.discount?.enabled && campaignData.discount?.percentage > 0) {
+      return price * (1 - campaignData.discount.percentage / 100);
+    }
+    return price;
+  };
+
   const commissions = {
     youtubeAds: 0,
     spotifyPlaylisting: 0,
@@ -373,27 +384,19 @@ function calculateCommissions(campaignData: any) {
   };
 
   if (campaignData.youtubeAds?.enabled) {
-    commissions.youtubeAds = Math.round((campaignData.youtubeAds.totalPrice || 0) * 0.3);
+    commissions.youtubeAds = Math.round(calculateGrossCommission(applyDiscount(campaignData.youtubeAds.totalPrice || 0)));
   }
   if (campaignData.spotifyPlaylisting?.enabled) {
-    commissions.spotifyPlaylisting = Math.round((campaignData.spotifyPlaylisting.price || 0) * 0.3);
+    commissions.spotifyPlaylisting = Math.round(calculateGrossCommission(applyDiscount(campaignData.spotifyPlaylisting.price || 0)));
   }
   if (campaignData.soundcloudReposts?.enabled) {
-    commissions.soundcloudReposts = Math.round((campaignData.soundcloudReposts.price || 0) * 0.3);
+    commissions.soundcloudReposts = Math.round(calculateGrossCommission(applyDiscount(campaignData.soundcloudReposts.price || 0)));
   }
   if (campaignData.instagramSeeding?.enabled) {
-    commissions.instagramSeeding = Math.round((campaignData.instagramSeeding.price || 0) * 0.3);
+    commissions.instagramSeeding = Math.round(calculateNetCommission(applyDiscount(campaignData.instagramSeeding.price || 0)));
   }
   if (campaignData.metaTiktokAds?.enabled) {
-    commissions.metaTiktokAds = Math.round((campaignData.metaTiktokAds.price || 0) * 0.3);
-  }
-
-  // Apply discount to commissions if enabled
-  if (campaignData.discount?.enabled && campaignData.discount?.percentage > 0) {
-    const discountMultiplier = (1 - campaignData.discount.percentage / 100);
-    Object.keys(commissions).forEach(key => {
-      commissions[key] = Math.round(commissions[key] * discountMultiplier);
-    });
+    commissions.metaTiktokAds = Math.round(calculateNetCommission(applyDiscount(campaignData.metaTiktokAds.price || 0)));
   }
 
   return commissions;
