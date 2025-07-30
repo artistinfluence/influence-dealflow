@@ -26,6 +26,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
         name: 'YOUTUBE ADVERTISING',
         details: sectionDetails || `${activeSections.length} campaign(s) configured`,
         price: campaignData.youtubeAds.totalPrice,
+        discount: campaignData.youtubeAds.discount,
       });
     }
 
@@ -36,6 +37,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
         name: 'SPOTIFY PLAYLISTING',
         details: `${streams} streams package`,
         price: campaignData.spotifyPlaylisting.price,
+        discount: campaignData.spotifyPlaylisting.discount,
       });
     }
 
@@ -44,6 +46,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
         name: 'SOUNDCLOUD REPOSTS',
         details: 'Network distribution package',
         price: campaignData.soundcloudReposts.price,
+        discount: campaignData.soundcloudReposts.discount,
       });
     }
 
@@ -53,6 +56,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
         name: 'INSTAGRAM SEEDING',
         details: `$${adSpend.toLocaleString()} budget`,
         price: campaignData.instagramSeeding.price,
+        discount: campaignData.instagramSeeding.discount,
       });
     }
 
@@ -67,6 +71,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
         name: 'META & TIKTOK ADS',
         details: `${platformLabel} - $${adSpend.toLocaleString()} budget`,
         price: campaignData.metaTiktokAds.price,
+        discount: campaignData.metaTiktokAds.discount,
       });
     }
 
@@ -75,10 +80,14 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
 
   const activeServices = getActiveServices();
   const subtotal = activeServices.reduce((sum, service) => sum + service.price, 0);
-  const discountAmount = campaignData.discount?.enabled && campaignData.discount?.percentage > 0 
-    ? subtotal * (campaignData.discount.percentage / 100) 
-    : 0;
-  const totalPrice = subtotal - discountAmount;
+  
+  // Calculate total discount from all services
+  const totalDiscountAmount = activeServices.reduce((sum, service) => {
+    const discount = service.discount || 0;
+    return sum + (service.price * (discount / 100));
+  }, 0);
+  
+  const totalPrice = subtotal - totalDiscountAmount;
 
   if (activeServices.length === 0) {
     return (
@@ -100,26 +109,48 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
       </h3>
       
       <div className="w-full max-w-2xl space-y-4">
-        {activeServices.map((service, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between p-4 bg-background/50 rounded border border-border/50"
-          >
-            <div className="text-left">
-              <h4 className="font-bebas text-sm tracking-wide">
-                {service.name}
-              </h4>
-              <p className="text-xs text-muted-foreground">
-                {service.details}
-              </p>
+        {activeServices.map((service, index) => {
+          const discountAmount = service.discount ? service.price * (service.discount / 100) : 0;
+          const finalPrice = service.price - discountAmount;
+          
+          return (
+            <div
+              key={index}
+              className="flex items-center justify-between p-4 bg-background/50 rounded border border-border/50"
+            >
+              <div className="text-left">
+                <h4 className="font-bebas text-sm tracking-wide">
+                  {service.name}
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {service.details}
+                </p>
+                {service.discount > 0 && (
+                  <p className="text-xs text-green-600">
+                    {service.discount}% discount applied
+                  </p>
+                )}
+              </div>
+              <div className="text-right">
+                {service.discount > 0 ? (
+                  <div className="space-y-1">
+                    <span className="text-xs text-muted-foreground line-through">
+                      {formatCurrency(service.price)}
+                    </span>
+                    <br />
+                    <span className="text-sm font-bold">
+                      {formatCurrency(finalPrice)}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-sm font-bold">
+                    {formatCurrency(service.price)}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="text-right">
-              <span className="text-sm font-bold">
-                {formatCurrency(service.price)}
-              </span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
         
         <div className="border-t border-primary/20 pt-4 space-y-2">
           <div className="flex items-center justify-between">
@@ -131,13 +162,13 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
             </span>
           </div>
           
-          {campaignData.discount?.enabled && discountAmount > 0 && (
+          {totalDiscountAmount > 0 && (
             <div className="flex items-center justify-between text-green-600">
               <span className="text-base font-bebas tracking-wide">
-                DISCOUNT ({campaignData.discount?.percentage}%)
+                TOTAL DISCOUNTS
               </span>
               <span className="text-base font-bebas">
-                -{formatCurrency(discountAmount)}
+                -{formatCurrency(totalDiscountAmount)}
               </span>
             </div>
           )}

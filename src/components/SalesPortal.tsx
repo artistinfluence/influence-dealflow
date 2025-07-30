@@ -34,20 +34,17 @@ const SalesPortal: React.FC = () => {
     const calculateGrossCommission = (price: number) => price * 0.2;
     const calculateNetCommission = (price: number) => price * 0.3 * 0.2;
     
-    // Apply discount to prices if enabled
-    const applyDiscount = (price: number) => {
-      if (campaignData.discount?.enabled && campaignData.discount?.percentage > 0) {
-        return price * (1 - campaignData.discount.percentage / 100);
-      }
-      return price;
+    // Apply per-service discount to prices
+    const applyServiceDiscount = (price: number, discount: number) => {
+      return price * (1 - discount / 100);
     };
 
     return {
-      youtubeAds: campaignData.youtubeAds.enabled ? calculateGrossCommission(applyDiscount(campaignData.youtubeAds.totalPrice)) : 0,
-      spotifyPlaylisting: campaignData.spotifyPlaylisting.enabled ? calculateGrossCommission(applyDiscount(campaignData.spotifyPlaylisting.price)) : 0,
-      soundcloudReposts: campaignData.soundcloudReposts.enabled ? calculateGrossCommission(applyDiscount(campaignData.soundcloudReposts.price)) : 0,
-      instagramSeeding: campaignData.instagramSeeding.enabled ? calculateNetCommission(applyDiscount(campaignData.instagramSeeding.price)) : 0,
-      metaTiktokAds: campaignData.metaTiktokAds.enabled ? calculateNetCommission(applyDiscount(campaignData.metaTiktokAds.price)) : 0,
+      youtubeAds: campaignData.youtubeAds.enabled ? calculateGrossCommission(applyServiceDiscount(campaignData.youtubeAds.totalPrice, campaignData.youtubeAds.discount)) : 0,
+      spotifyPlaylisting: campaignData.spotifyPlaylisting.enabled ? calculateGrossCommission(applyServiceDiscount(campaignData.spotifyPlaylisting.price, campaignData.spotifyPlaylisting.discount)) : 0,
+      soundcloudReposts: campaignData.soundcloudReposts.enabled ? calculateGrossCommission(applyServiceDiscount(campaignData.soundcloudReposts.price, campaignData.soundcloudReposts.discount)) : 0,
+      instagramSeeding: campaignData.instagramSeeding.enabled ? calculateNetCommission(applyServiceDiscount(campaignData.instagramSeeding.price, campaignData.instagramSeeding.discount)) : 0,
+      metaTiktokAds: campaignData.metaTiktokAds.enabled ? calculateNetCommission(applyServiceDiscount(campaignData.metaTiktokAds.price, campaignData.metaTiktokAds.discount)) : 0,
     };
   };
 

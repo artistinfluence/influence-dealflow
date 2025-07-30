@@ -50,8 +50,8 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
     updateService('metaTiktokAds', { platform, budget, price: budget });
   };
 
-  const handleDiscountUpdate = (percentage: number) => {
-    updateService('discount', { percentage });
+  const handleServiceDiscountUpdate = (service: keyof CampaignData, discount: number) => {
+    updateService(service, { discount });
   };
 
   return (
@@ -83,10 +83,28 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           </div>
           
           {campaignData.youtubeAds.enabled && (
-            <YouTubeAdsService
-              sections={campaignData.youtubeAds.sections}
-              onUpdate={handleYouTubeUpdate}
-            />
+            <div className="space-y-4">
+              <YouTubeAdsService
+                sections={campaignData.youtubeAds.sections}
+                onUpdate={handleYouTubeUpdate}
+              />
+              <div className="space-y-2">
+                <Label htmlFor="youtube-discount">Discount (max 20%)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="youtube-discount"
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={campaignData.youtubeAds.discount || ''}
+                    onChange={(e) => handleServiceDiscountUpdate('youtubeAds', Math.min(20, Number(e.target.value)))}
+                    placeholder="0"
+                    className="w-24"
+                  />
+                  <span className="text-sm text-muted-foreground">%</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
@@ -105,10 +123,28 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           </div>
           
           {campaignData.spotifyPlaylisting.enabled && (
-            <SpotifyPlaylistingService
-              selectedPackage={campaignData.spotifyPlaylisting.selectedPackage}
-              onUpdate={handleSpotifyUpdate}
-            />
+            <div className="space-y-4">
+              <SpotifyPlaylistingService
+                selectedPackage={campaignData.spotifyPlaylisting.selectedPackage}
+                onUpdate={handleSpotifyUpdate}
+              />
+              <div className="space-y-2">
+                <Label htmlFor="spotify-discount">Discount (max 20%)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="spotify-discount"
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={campaignData.spotifyPlaylisting.discount || ''}
+                    onChange={(e) => handleServiceDiscountUpdate('spotifyPlaylisting', Math.min(20, Number(e.target.value)))}
+                    placeholder="0"
+                    className="w-24"
+                  />
+                  <span className="text-sm text-muted-foreground">%</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
@@ -127,10 +163,28 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           </div>
           
           {campaignData.soundcloudReposts.enabled && (
-            <SoundCloudRepostsService
-              selectedPackage={campaignData.soundcloudReposts.selectedPackage}
-              onUpdate={handleSoundCloudUpdate}
-            />
+            <div className="space-y-4">
+              <SoundCloudRepostsService
+                selectedPackage={campaignData.soundcloudReposts.selectedPackage}
+                onUpdate={handleSoundCloudUpdate}
+              />
+              <div className="space-y-2">
+                <Label htmlFor="soundcloud-discount">Discount (max 20%)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="soundcloud-discount"
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={campaignData.soundcloudReposts.discount || ''}
+                    onChange={(e) => handleServiceDiscountUpdate('soundcloudReposts', Math.min(20, Number(e.target.value)))}
+                    placeholder="0"
+                    className="w-24"
+                  />
+                  <span className="text-sm text-muted-foreground">%</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
@@ -149,10 +203,28 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           </div>
           
           {campaignData.instagramSeeding.enabled && (
-            <InstagramSeedingService
-              budget={campaignData.instagramSeeding.budget}
-              onUpdate={handleInstagramUpdate}
-            />
+            <div className="space-y-4">
+              <InstagramSeedingService
+                budget={campaignData.instagramSeeding.budget}
+                onUpdate={handleInstagramUpdate}
+              />
+              <div className="space-y-2">
+                <Label htmlFor="instagram-discount">Discount (max 5%)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="instagram-discount"
+                    type="number"
+                    min="0"
+                    max="5"
+                    value={campaignData.instagramSeeding.discount || ''}
+                    onChange={(e) => handleServiceDiscountUpdate('instagramSeeding', Math.min(5, Number(e.target.value)))}
+                    placeholder="0"
+                    className="w-24"
+                  />
+                  <span className="text-sm text-muted-foreground">%</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
@@ -171,45 +243,24 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
           </div>
           
           {campaignData.metaTiktokAds.enabled && (
-            <MetaTikTokAdsService
-              platform={campaignData.metaTiktokAds.platform}
-              budget={campaignData.metaTiktokAds.budget}
-              onUpdate={handleMetaTikTokUpdate}
-            />
-          )}
-        </div>
-
-        {/* Discount Section */}
-        <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h3 className="text-lg font-bebas tracking-wide">
-                CAMPAIGN DISCOUNT
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Apply an overall discount to the campaign (affects sales commission)
-              </p>
-            </div>
-            <Switch
-              checked={campaignData.discount?.enabled || false}
-              onCheckedChange={() => toggleService('discount')}
-            />
-          </div>
-          
-          {campaignData.discount?.enabled && (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              <MetaTikTokAdsService
+                platform={campaignData.metaTiktokAds.platform}
+                budget={campaignData.metaTiktokAds.budget}
+                onUpdate={handleMetaTikTokUpdate}
+              />
               <div className="space-y-2">
-                <Label htmlFor="discount-percentage">Discount Percentage</Label>
+                <Label htmlFor="meta-discount">Discount (max 5%)</Label>
                 <div className="flex items-center gap-2">
                   <Input
-                    id="discount-percentage"
+                    id="meta-discount"
                     type="number"
                     min="0"
-                    max="100"
-                    value={campaignData.discount?.percentage || ''}
-                    onChange={(e) => handleDiscountUpdate(Number(e.target.value))}
-                    placeholder="Enter discount percentage"
-                    className="w-32"
+                    max="5"
+                    value={campaignData.metaTiktokAds.discount || ''}
+                    onChange={(e) => handleServiceDiscountUpdate('metaTiktokAds', Math.min(5, Number(e.target.value)))}
+                    placeholder="0"
+                    className="w-24"
                   />
                   <span className="text-sm text-muted-foreground">%</span>
                 </div>
@@ -217,6 +268,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
             </div>
           )}
         </div>
+
       </div>
     </div>
   );
