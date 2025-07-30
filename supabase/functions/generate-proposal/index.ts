@@ -119,13 +119,9 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
     'TikTok Spark Ads': 'Our Spark Ads service turns native TikTok content—either your own or our recommended creatives—into powerful ads served directly in the For You feed. These campaigns deliver best-in-class CPVs (as low as $0.03), with precision targeting for playlisting, ticket sales, or streaming. We optimize your campaign daily by scaling top-performing creatives and provide clear weekly reporting and final data exports.'
   };
   
-  const prompt = `The Proposal Formatter Agent takes pre-provided campaign inputs — including artist information, genre, campaign start date, artist tier, and a list of selected services with associated goals and pricing — and reformats them into a professionally structured proposal email for client communication. The proposal should feel custom-written, yet follow a consistent internal structure and style used by Artist Influence.
+  const prompt = `Generate a professional campaign proposal following the exact structure below. Do NOT include any greeting, salutation, or introductory paragraph. Start directly with the campaign goals section.
 
-Key Responsibilities:
-1. Campaign Overview Personalization:
-2. Use the provided artist name, genre, song(s), campaign timeline, and tier (Emerging, Mid, Established). Reference the artist's online presence (Spotify, socials, bios, etc.) to personalize the overview with tone, key achievements, or musical style. Focus on aligning Artist Influence's services with the artist's momentum, target audience, and upcoming release cadence.
-3. Standard Structure Formatting:
-4. Output must follow the exact structure below (with emojis, headers, and spacing):
+Structure Requirements:
 
 🎯 CAMPAIGN GOALS
 [2–5 sentence paragraph personalized to artist context and release plan.]
@@ -262,15 +258,18 @@ function getActiveServices(campaignData: any) {
   const services = [];
   
   if (campaignData.youtubeAds?.enabled && campaignData.youtubeAds.sections) {
-    campaignData.youtubeAds.sections.forEach((section: any, index: number) => {
-      if (section.platform && section.price > 0) {
-        services.push({
-          name: 'YouTube Advertising',
-          details: `${section.platform} - ${section.targetViews.toLocaleString()} views`,
-          price: section.price
-        });
-      }
-    });
+    const activeSections = campaignData.youtubeAds.sections.filter((section: any) => section.platform && section.price > 0);
+    if (activeSections.length > 0) {
+      const totalPrice = activeSections.reduce((sum: number, section: any) => sum + section.price, 0);
+      const sectionDetails = activeSections.map((section: any) => 
+        `${section.platform} - ${section.targetViews.toLocaleString()} views`
+      ).join(', ');
+      services.push({
+        name: 'YouTube Advertising',
+        details: sectionDetails,
+        price: totalPrice
+      });
+    }
   }
   
   if (campaignData.spotifyPlaylisting?.enabled) {
@@ -370,7 +369,7 @@ function calculateTotalAmount(campaignData: any): number {
 
 function calculateCommissions(campaignData: any) {
   const calculateGrossCommission = (price: number) => price * 0.2;
-  const calculateNetCommission = (price: number) => price * 0.3 * 0.2;
+  const calculateNetCommission = (price: number) => price * 0.06; // 6% for Instagram and Meta/TikTok ads
   
   // Apply per-service discount to prices
   const applyServiceDiscount = (price: number, discount: number) => {

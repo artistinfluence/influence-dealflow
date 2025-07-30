@@ -51,7 +51,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
     }
 
     if (campaignData.instagramSeeding.enabled && campaignData.instagramSeeding.price > 0) {
-      const adSpend = Math.floor(campaignData.instagramSeeding.budget * 0.7);
+      const adSpend = Math.floor(campaignData.instagramSeeding.price * 0.7);
       services.push({
         name: 'INSTAGRAM SEEDING',
         details: `$${adSpend.toLocaleString()} budget`,
@@ -66,7 +66,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
         : campaignData.metaTiktokAds.platform === 'meta' 
         ? 'Meta' 
         : 'TikTok';
-      const adSpend = Math.floor(campaignData.metaTiktokAds.budget * 0.7);
+      const adSpend = Math.floor(campaignData.metaTiktokAds.price * 0.7);
       services.push({
         name: 'META & TIKTOK ADS',
         details: `${platformLabel} - $${adSpend.toLocaleString()} budget`,
