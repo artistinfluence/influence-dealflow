@@ -121,6 +121,8 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
   
   const prompt = `Generate a professional campaign proposal following the exact structure below. Do NOT include any greeting, salutation, or introductory paragraph. Start directly with the campaign goals section.
 
+IMPORTANT: Use only gender-neutral pronouns (they/them/their) when referring to the artist. Do not use he/him/his or she/her/hers.
+
 Structure Requirements:
 
 🎯 CAMPAIGN GOALS
