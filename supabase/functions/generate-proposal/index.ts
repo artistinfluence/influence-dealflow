@@ -118,10 +118,72 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
     'Meta & TikTok Ads': 'Our Meta Video Ads service turns your mix highlights and vertical edits into thumb-stopping paid placements across Facebook and Instagram feeds, Stories, and Reels. We build layered interest, behavior, and look-alike audiences drawn from your past viewers and genre peers, then continually A/B test creatives, hooks, and copy to lock in the lowest possible CPVs in high-value territories. Campaigns include real-time budget pacing, exclusion of bot-heavy regions, and remarketing to warm fans—driving qualified traffic back to YouTube, Spotify, or your next drop. Weekly reporting provides full delivery metrics plus audience insights, so you always know where growth is coming from.',
     'TikTok Spark Ads': 'Our Spark Ads service turns native TikTok content—either your own or our recommended creatives—into powerful ads served directly in the For You feed. These campaigns deliver best-in-class CPVs (as low as $0.03), with precision targeting for playlisting, ticket sales, or streaming. We optimize your campaign daily by scaling top-performing creatives and provide clear weekly reporting and final data exports.'
   };
+
+  // Release timing logic
+  const parseDate = (val: any) => {
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? null : d;
+  };
+  const startDate = parseDate(clientDetails?.campaignStart);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let isReleased = false;
+  if (startDate) {
+    const sd = new Date(startDate);
+    sd.setHours(0, 0, 0, 0);
+    isReleased = sd.getTime() <= today.getTime();
+  }
+
+  // Build Selected Services and Pricing lines with discounts reflected
+  const usd = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const selectedLines: string[] = [];
+
+  if (campaignData.youtubeAds?.enabled) {
+    const sections = (campaignData.youtubeAds.sections || []).filter((s: any) => s.platform && s.price > 0);
+    const sectionDetails = sections.map((s: any) => `${s.platform} - ${Number(s.targetViews).toLocaleString()} views`).join(', ');
+    const base = Number(campaignData.youtubeAds.totalPrice ?? sections.reduce((sum: number, s: any) => sum + (Number(s.price) || 0), 0));
+    const discount = Number(campaignData.youtubeAds.discount || 0);
+    const discounted = Math.round(base * (1 - discount / 100));
+    selectedLines.push(`- YouTube Advertising: ${sectionDetails} — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+  }
+
+  if (campaignData.spotifyPlaylisting?.enabled) {
+    const base = Number(campaignData.spotifyPlaylisting.price || 0);
+    const discount = Number(campaignData.spotifyPlaylisting.discount || 0);
+    const discounted = Math.round(base * (1 - discount / 100));
+    selectedLines.push(`- Spotify Playlisting: ${campaignData.spotifyPlaylisting.selectedPackage} streams package — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+  }
+
+  if (campaignData.soundcloudReposts?.enabled) {
+    const base = Number(campaignData.soundcloudReposts.price || 0);
+    const discount = Number(campaignData.soundcloudReposts.discount || 0);
+    const discounted = Math.round(base * (1 - discount / 100));
+    selectedLines.push(`- SoundCloud Reposts: ${campaignData.soundcloudReposts.selectedPackage} package — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+  }
+
+  if (campaignData.instagramSeeding?.enabled) {
+    const base = Number(campaignData.instagramSeeding.price || 0);
+    const discount = Number(campaignData.instagramSeeding.discount || 0);
+    const discounted = Math.round(base * (1 - discount / 100));
+    const budget = Math.round(base * 0.7);
+    selectedLines.push(`- Instagram Seeding: $${usd(budget)} budget — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+  }
+
+  if (campaignData.metaTiktokAds?.enabled) {
+    const base = Number(campaignData.metaTiktokAds.price || 0);
+    const discount = Number(campaignData.metaTiktokAds.discount || 0);
+    const discounted = Math.round(base * (1 - discount / 100));
+    const budget = Math.round(base * 0.7);
+    selectedLines.push(`- Meta & TikTok Ads: ${campaignData.metaTiktokAds.platform} - $${usd(budget)} budget — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+  }
+
+  const selectedServicesAndPricing = selectedLines.join('\n');
+  const totalInvestment = Math.round(calculateTotalAmount(campaignData));
   
   const prompt = `Generate a professional campaign proposal following the exact structure below. Do NOT include any greeting, salutation, or introductory paragraph. Start directly with the campaign goals section.
 
 IMPORTANT: Use only gender-neutral pronouns (they/them/their) when referring to the artist. Do not use he/him/his or she/her/hers.
+IMPORTANT: If the campaign start date is today or in the past, frame the strategy as post-release support for a live release (do NOT call it upcoming). If the date is in the future, frame as pre-release buildup.
 
 Structure Requirements:
 
@@ -161,18 +223,20 @@ Thank you.
 8. Avoid redundant phrasing or overt sales language.
 9. Write the proposal ABOUT the artist in third person, not TO the artist. Do not use "your" or "you" - refer to the artist by name.
 10. Proposal must be ready for direct copy-paste into an email or PDF.
+11. For COST BREAKDOWN, repeat the exact line items from "Selected Services and Pricing" including discounts shown; do not recalculate or alter numbers.
 
 Artist Information:
 - Name: ${clientDetails.artistName}
 - Genre: ${clientDetails.genre}
 - Song/Release: ${clientDetails.songTitle}
 - Campaign Start: ${clientDetails.campaignStart}
+- Release Timing: ${isReleased ? 'Already released' : 'Upcoming release'}
 - Artist Tier: ${clientDetails.artistTier}
 
 Selected Services and Pricing:
-${activeServices.map(service => `- ${service.name}: ${service.details} — $${service.price}`).join('\n')}
+${selectedServicesAndPricing}
 
-Total Investment: $${calculateTotalAmount(campaignData)}
+Total Investment: $${totalInvestment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
 
 EXACT SERVICE DESCRIPTIONS TO USE:
 ${activeServices.map(service => {
