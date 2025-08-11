@@ -124,7 +124,7 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
     const d = new Date(val);
     return isNaN(d.getTime()) ? null : d;
   };
-  const startDate = parseDate(clientDetails?.campaignStart);
+  const startDate = parseDate(clientDetails?.releaseDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   let isReleased = false;
@@ -183,7 +183,7 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
   const prompt = `Generate a professional campaign proposal following the exact structure below. Do NOT include any greeting, salutation, or introductory paragraph. Start directly with the campaign goals section.
 
 IMPORTANT: Use only gender-neutral pronouns (they/them/their) when referring to the artist. Do not use he/him/his or she/her/hers.
-IMPORTANT: If the campaign start date is today or in the past, frame the strategy as post-release support for a live release (do NOT call it upcoming). If the date is in the future, frame as pre-release buildup.
+CRITICAL: If Release Timing is 'Already released', explicitly write CAMPAIGN GOALS as a post-release strategy and never use words like 'upcoming', 'pre-release', 'launch', or 'before release'. If the date is in the future, write it as a pre-release buildup plan.
 
 Structure Requirements:
 
@@ -229,9 +229,9 @@ Artist Information:
 - Name: ${clientDetails.artistName}
 - Genre: ${clientDetails.genre}
 - Song/Release: ${clientDetails.songTitle}
-- Campaign Start: ${clientDetails.campaignStart}
+- Release Date: ${clientDetails.releaseDate}
 - Release Timing: ${isReleased ? 'Already released' : 'Upcoming release'}
-- Artist Tier: ${clientDetails.artistTier}
+- Artist Tier: ${clientDetails.tier}
 
 Selected Services and Pricing:
 ${selectedServicesAndPricing}
