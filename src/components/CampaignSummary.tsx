@@ -42,9 +42,12 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
     }
 
     if (campaignData.soundcloudReposts.enabled && campaignData.soundcloudReposts.price > 0) {
+      const pkg = campaignData.soundcloudReposts.selectedPackage;
+      const reachMillions = pkg ? parseInt(pkg) : 0;
+      const reachLabel = reachMillions > 0 ? `${reachMillions}M reach package` : 'Repost package';
       services.push({
         name: 'SOUNDCLOUD REPOSTS',
-        details: 'Network distribution package',
+        details: reachLabel,
         price: campaignData.soundcloudReposts.price,
         discount: campaignData.soundcloudReposts.discount,
       });
