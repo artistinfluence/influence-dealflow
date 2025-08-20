@@ -70,23 +70,60 @@ serve(async (req) => {
     // Sanitize email
     const sanitizedEmail = recipientEmail.trim().toLowerCase();
 
-    // Generate proposal content using OpenAI
-    const proposalContent = await generateProposalContent(clientDetails, campaignData);
+    // Generate proposal content using OpenAI with fallback
+    let proposalContent;
+    let emailResponse;
+    let emailId = null;
+
+    try {
+      proposalContent = await generateProposalContent(clientDetails, campaignData);
+      console.log('Proposal content generated successfully');
+    } catch (error) {
+      console.error('Failed to generate proposal content:', error);
+      return new Response(JSON.stringify({ 
+        error: 'Failed to generate proposal content. Please try again.' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     // Send email via Resend
-    const emailResponse = await sendProposalEmail(sanitizedEmail, clientDetails, proposalContent, campaignData);
+    try {
+      emailResponse = await sendProposalEmail(sanitizedEmail, clientDetails, proposalContent, campaignData);
+      emailId = emailResponse.id;
+      console.log('Email sent successfully with ID:', emailId);
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      return new Response(JSON.stringify({ 
+        error: 'Failed to send proposal email. Please check the recipient email address and try again.' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
-    // Track proposal in database
-    const totalAmount = calculateTotalAmount(campaignData);
-    await supabase.from('proposals').insert({
-      artist_name: clientDetails.artistName,
-      song_title: clientDetails.songTitle,
-      recipient_email: sanitizedEmail,
-      total_amount: totalAmount,
-      services_included: campaignData,
-    });
+    // Track proposal in database (non-blocking)
+    try {
+      const totalAmount = calculateTotalAmount(campaignData);
+      await supabase.from('proposals').insert({
+        artist_name: clientDetails.artistName,
+        song_title: clientDetails.songTitle,
+        recipient_email: sanitizedEmail,
+        total_amount: totalAmount,
+        services_included: campaignData,
+      });
+      console.log('Proposal tracked in database');
+    } catch (error) {
+      console.error('Failed to track proposal in database (non-critical):', error);
+      // Don't fail the whole operation if DB insert fails
+    }
 
-    return new Response(JSON.stringify({ success: true, emailId: emailResponse.id }), {
+    return new Response(JSON.stringify({ 
+      success: true, 
+      emailId,
+      message: 'Proposal generated and sent successfully'
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
@@ -180,7 +217,11 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
   const selectedServicesAndPricing = selectedLines.join('\n');
   const totalInvestment = Math.round(calculateTotalAmount(campaignData));
   
-  const prompt = `Generate a professional campaign proposal following the exact structure below. Do NOT include any greeting, salutation, or introductory paragraph. Start directly with the campaign goals section.
+  // Try OpenAI first, fallback to template if it fails
+  try {
+    console.log('Attempting OpenAI API call...');
+    
+    const prompt = `Generate a professional campaign proposal following the exact structure below. Do NOT include any greeting, salutation, or introductory paragraph. Start directly with the campaign goals section.
 
 IMPORTANT: Use only gender-neutral pronouns (they/them/their) when referring to the artist. Do not use he/him/his or she/her/hers.
 CRITICAL: If Release Timing is 'Already released', explicitly write CAMPAIGN GOALS as a post-release strategy and never use words like 'upcoming', 'pre-release', 'launch', or 'before release'. If the date is in the future, write it as a pre-release buildup plan.
@@ -245,51 +286,135 @@ ${activeServices.map(service => {
 
 Generate a professional campaign proposal following the exact structure above. Keep campaign goals to 1 bullet point per service maximum. Use ONLY the exact service descriptions provided above and do not modify pricing. CRITICAL: Use the complete disclaimer text exactly as provided - do not shorten, summarize, or modify it in any way.`;
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${openAIApiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { 
-          role: 'system', 
-          content: 'You are a professional music campaign proposal formatter. Follow the exact structure and formatting requirements provided in the prompt. Use ONLY the exact service descriptions provided in the prompt - do not create your own descriptions or modify them in any way.'
-        },
-        { role: 'user', content: prompt }
-      ],
-      temperature: 0.7,
-      max_tokens: 2000,
-    }),
-  });
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'You are a professional music campaign proposal formatter. Follow the exact structure and formatting requirements provided in the prompt. Use ONLY the exact service descriptions provided in the prompt - do not create your own descriptions or modify them in any way.'
+          },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
 
-  const data = await response.json();
-  return data.choices[0].message.content;
+    if (!response.ok) {
+      console.error('OpenAI API error:', response.status, response.statusText);
+      throw new Error(`OpenAI API returned ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('OpenAI response received:', JSON.stringify(data, null, 2));
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI API response structure:', data);
+      throw new Error('OpenAI API returned invalid response structure');
+    }
+
+    const content = data.choices[0].message.content;
+    if (!content || content.trim().length === 0) {
+      console.error('OpenAI returned empty content');
+      throw new Error('OpenAI returned empty content');
+    }
+
+    console.log('OpenAI content generated successfully');
+    return content;
+
+  } catch (error) {
+    console.error('OpenAI generation failed, using fallback template:', error);
+    
+    // Fallback template generation
+    return generateFallbackProposal(clientDetails, campaignData, activeServices, serviceDescriptions, selectedServicesAndPricing, totalInvestment, isReleased);
+  }
+}
+
+function generateFallbackProposal(clientDetails: any, campaignData: any, activeServices: any[], serviceDescriptions: any, selectedServicesAndPricing: string, totalInvestment: number, isReleased: boolean) {
+  const goalsText = isReleased 
+    ? `This post-release campaign for ${clientDetails.artistName} focuses on maximizing exposure and engagement for "${clientDetails.songTitle}" across key digital platforms. Our strategic approach targets ${clientDetails.genre} audiences through proven channels to drive sustainable growth and fan acquisition.`
+    : `This pre-release campaign for ${clientDetails.artistName} builds anticipation and secures early momentum for "${clientDetails.songTitle}" ahead of its official launch. Our multi-platform strategy targets ${clientDetails.genre} audiences to ensure maximum impact upon release.`;
+
+  const serviceGoals = activeServices.map(service => `- ${service.name}: Drive targeted engagement and reach`).join('\n');
+
+  const serviceDescriptionsText = activeServices.map(service => 
+    `${service.name.toUpperCase()}\n${serviceDescriptions[service.name] || 'Service description not available'}`
+  ).join('\n\n');
+
+  return `🎯 CAMPAIGN GOALS
+
+${goalsText}
+
+${serviceGoals}
+
+💰 COST BREAKDOWN
+
+${selectedServicesAndPricing}
+
+Total Investment: $${totalInvestment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+
+📦 SERVICE DESCRIPTIONS
+
+${serviceDescriptionsText}
+
+📋 DISCLAIMER AND DOCUMENT USAGE
+
+Artist Influence, LLC makes every attempt to be sure of the accuracy and reliability of services offered in this document. The information is, however, provided "as is" without a warranty of any kind.
+
+Artist Influence, LLC shall not be held liable for any loss or damage of any nature (direct, indirect, consequential, or other) as a result of our services offered and performed. We do not guarantee any results unless stated and agreed upon by all parties involved.
+
+This document is tailored to and to be restricted only to ${clientDetails.artistName} and those who are legally bound in the assistance and wellbeing of ${clientDetails.artistName} (i.e. agents, booking, press, etc.) — Please do not share this document with parties not currently legally involved with ${clientDetails.artistName}.
+
+Artist Influence, LLC reserves the right to adjust pricing to meet the needs of the client or any factors otherwise.
+
+Please respect our privacy and do not share any information provided within this document with any other parties.
+
+Thank you.
+— The Artist Influence Team`;
 }
 
 async function sendProposalEmail(recipientEmail: string, clientDetails: any, aiContent: string, campaignData: any) {
-  const validUntil = new Date();
-  validUntil.setDate(validUntil.getDate() + 14);
-  
-  const emailHtml = generateEmailTemplate(clientDetails, aiContent, validUntil, campaignData);
+  try {
+    const validUntil = new Date();
+    validUntil.setDate(validUntil.getDate() + 14);
+    
+    const emailHtml = generateEmailTemplate(clientDetails, aiContent, validUntil, campaignData);
+    console.log('Sending email to:', recipientEmail);
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${resendApiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: 'Artist Influence <proposals@artistinfluence.com>',
-      to: [recipientEmail],
-      subject: `Campaign Proposal: ${clientDetails.artistName} - ${clientDetails.songTitle}`,
-      text: emailHtml,
-    }),
-  });
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Artist Influence <proposals@artistinfluence.com>',
+        to: [recipientEmail],
+        subject: `Campaign Proposal: ${clientDetails.artistName} - ${clientDetails.songTitle}`,
+        html: emailHtml,
+      }),
+    });
 
-  return await response.json();
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Resend API error:', response.status, response.statusText, errorText);
+      throw new Error(`Email service returned ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log('Email sent successfully:', result);
+    return result;
+
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    throw new Error(`Failed to send email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil: Date, campaignData: any): string {
