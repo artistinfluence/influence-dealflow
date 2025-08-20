@@ -421,28 +421,41 @@ function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil
   const commissions = calculateCommissions(campaignData);
   const commissionTotal = Object.values(commissions).reduce((sum: number, amount: number) => sum + amount, 0);
   
+  // Convert AI content to HTML (replace line breaks with <br> tags)
+  const htmlAiContent = aiContent.replace(/\n/g, '<br>');
+  
   const commissionBreakdown = `
-💰 SALESPERSON COMMISSION BREAKDOWN
+    <p style="margin: 20px 0; font-weight: bold;">💰 SALESPERSON COMMISSION BREAKDOWN</p>
+    <div style="margin-left: 20px;">
+      <p>YouTube Ads: $${commissions.youtubeAds}</p>
+      <p>Spotify Playlisting: $${commissions.spotifyPlaylisting}</p>
+      <p>SoundCloud Reposts: $${commissions.soundcloudReposts}</p>
+      <p>Instagram Seeding: $${commissions.instagramSeeding}</p>
+      <p>Meta &amp; TikTok Ads: $${commissions.metaTiktokAds}</p>
+      <p style="font-weight: bold; margin-top: 15px;">TOTAL COMMISSION: $${commissionTotal}</p>
+    </div>
+  `;
 
-YouTube Ads: $${commissions.youtubeAds}
-Spotify Playlisting: $${commissions.spotifyPlaylisting}
-SoundCloud Reposts: $${commissions.soundcloudReposts}
-Instagram Seeding: $${commissions.instagramSeeding}
-Meta & TikTok Ads: $${commissions.metaTiktokAds}
-
-TOTAL COMMISSION: $${commissionTotal}`;
-
-  return `📄 CAMPAIGN PROPOSAL
-
-PREPARED BY: Artist Influence
-FOR: ${clientDetails.artistName} – "${clientDetails.songTitle}"
-VALID UNTIL: ${validUntil.toLocaleDateString('en-US')}
-
-${aiContent}
-${commissionBreakdown}
-
-Artist Influence
-https://artistinfluence.com`;
+  return `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <h2 style="color: #2c3e50;">📄 CAMPAIGN PROPOSAL</h2>
+      
+      <p><strong>PREPARED BY:</strong> Artist Influence</p>
+      <p><strong>FOR:</strong> ${clientDetails.artistName} – "${clientDetails.songTitle}"</p>
+      <p><strong>VALID UNTIL:</strong> ${validUntil.toLocaleDateString('en-US')}</p>
+      
+      <div style="margin: 30px 0;">
+        ${htmlAiContent}
+      </div>
+      
+      ${commissionBreakdown}
+      
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+        <p><strong>Artist Influence</strong><br>
+        <a href="https://artistinfluence.com" style="color: #3498db;">https://artistinfluence.com</a></p>
+      </div>
+    </div>
+  `;
 }
 
 function getActiveServices(campaignData: any) {
