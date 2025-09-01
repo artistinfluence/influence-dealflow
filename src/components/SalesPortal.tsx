@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import PasswordGate from '@/components/PasswordGate';
+import React, { useState } from 'react';
 import PortalHeader from '@/components/PortalHeader';
 import ClientDetailsForm, { ClientDetails } from '@/components/ClientDetailsForm';
 import CampaignBuilder from '@/components/CampaignBuilder';
@@ -9,7 +8,6 @@ import ProposalGeneration from '@/components/ProposalGeneration';
 import { CampaignData, getDefaultCampaignData } from '@/types/campaign';
 
 const SalesPortal: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [clientDetails, setClientDetails] = useState<ClientDetails>({
     artistName: '',
     songTitle: '',
@@ -18,17 +16,6 @@ const SalesPortal: React.FC = () => {
     releaseDate: new Date(),
   });
   const [campaignData, setCampaignData] = useState<CampaignData>(getDefaultCampaignData());
-
-  useEffect(() => {
-    const authStatus = localStorage.getItem('artistInfluenceAuth');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
 
   const calculateCommissions = (campaignData: CampaignData): CommissionData => {
     const calculateGrossCommission = (price: number) => price * 0.2;
@@ -59,10 +46,6 @@ const SalesPortal: React.FC = () => {
     
     return detailsValid && hasActiveServices;
   };
-
-  if (!isAuthenticated) {
-    return <PasswordGate onLogin={handleLogin} />;
-  }
 
   const commissions = calculateCommissions(campaignData);
 
