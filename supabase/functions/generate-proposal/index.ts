@@ -230,7 +230,14 @@ Structure Requirements:
 
 🎯 CAMPAIGN GOALS
 [2–5 sentence paragraph personalized to artist context and release plan.]
-- Bullet point goals based on each included service.
+- Bullet point goals based on each included service. Use these specific goals for each service:
+
+SERVICE-SPECIFIC GOALS EXAMPLES:
+- YouTube Advertising: "Maximize view-through rates and subscriber growth through targeted international campaigns"
+- Spotify Playlisting: "Secure organic playlist placements to boost monthly listeners and trigger algorithm recommendations" 
+- SoundCloud Reposts: "Build underground community engagement through verified artist network exposure"
+- Instagram Seeding: "Generate viral content momentum through strategic influencer partnerships and fan page features"
+- Meta & TikTok Ads: "Drive cost-effective traffic and conversions through optimized social media advertising campaigns"
 
 💰 COST BREAKDOWN
 [List each service name, quantity/type, and price in consistent format.]
@@ -341,7 +348,18 @@ function generateFallbackProposal(clientDetails: any, campaignData: any, activeS
     ? `This post-release campaign for ${clientDetails.artistName} focuses on maximizing exposure and engagement for "${clientDetails.songTitle}" across key digital platforms. Our strategic approach targets ${clientDetails.genre} audiences through proven channels to drive sustainable growth and fan acquisition.`
     : `This pre-release campaign for ${clientDetails.artistName} builds anticipation and secures early momentum for "${clientDetails.songTitle}" ahead of its official launch. Our multi-platform strategy targets ${clientDetails.genre} audiences to ensure maximum impact upon release.`;
 
-  const serviceGoals = activeServices.map(service => `- ${service.name}: Drive targeted engagement and reach`).join('\n');
+  // Service-specific goals mapping
+  const serviceGoalsMap: { [key: string]: string } = {
+    'YouTube Advertising': 'Maximize view-through rates and subscriber growth through targeted international campaigns',
+    'Spotify Playlisting': 'Secure organic playlist placements to boost monthly listeners and trigger algorithm recommendations',
+    'SoundCloud Reposts': 'Build underground community engagement through verified artist network exposure',
+    'Instagram Seeding': 'Generate viral content momentum through strategic influencer partnerships and fan page features',
+    'Meta & TikTok Ads': 'Drive cost-effective traffic and conversions through optimized social media advertising campaigns'
+  };
+
+  const serviceGoals = activeServices.map(service => 
+    `- ${service.name}: ${serviceGoalsMap[service.name] || 'Drive targeted engagement and reach'}`
+  ).join('\n');
 
   const serviceDescriptionsText = activeServices.map(service => 
     `${service.name.toUpperCase()}\n${serviceDescriptions[service.name] || 'Service description not available'}`
