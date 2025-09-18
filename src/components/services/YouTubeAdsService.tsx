@@ -20,6 +20,7 @@ const platforms = [
   { value: 'WW Skip', label: 'WW Skip' },
   { value: 'WW Website', label: 'WW Website' },
   { value: 'USA Website - $13 CPM', label: 'USA Website - $13 CPM' },
+  { value: 'US Skip/Display - $13 CPM', label: 'US Skip/Display - $13 CPM' },
   { value: 'LATAM Website - $5.60 CPM', label: 'LATAM Website - $5.60 CPM' },
   { value: 'EUR/AUS Website - $12 CPM', label: 'EUR/AUS Website - $12 CPM' },
   { value: 'WW Display - $7 CPM', label: 'WW Display - $7 CPM' },
