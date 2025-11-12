@@ -153,7 +153,11 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
     'YouTube Advertising': 'Our YouTube ad campaigns turn music videos into highly optimized promotional assets using strategic international targeting and our proprietary view-to-engagement ratio engine. By tapping into global markets with ultra-low CPVs, we maximize reach while ensuring your video resonates with viewers. Whether you\'re focused on subscribers, long-form engagement, or workarounds for unapproved videos, we tailor every campaign for high impact and transparent reporting.',
     'Instagram Seeding': 'Instagram seeding places your music on genre-aligned fan pages—like EDM edits or festival reels—where your target audience already hangs out. We handpick creators (not recycled influencers) for each campaign to ensure relevance and cost-efficiency, maximizing ROI and discovery. Every post tags the artist, links the sound, and is tracked via a live dashboard so you can see real-time results.',
     'Meta & TikTok Ads': 'Our Meta Video Ads service turns your mix highlights and vertical edits into thumb-stopping paid placements across Facebook and Instagram feeds, Stories, and Reels. We build layered interest, behavior, and look-alike audiences drawn from your past viewers and genre peers, then continually A/B test creatives, hooks, and copy to lock in the lowest possible CPVs in high-value territories. Campaigns include real-time budget pacing, exclusion of bot-heavy regions, and remarketing to warm fans—driving qualified traffic back to YouTube, Spotify, or your next drop. Weekly reporting provides full delivery metrics plus audience insights, so you always know where growth is coming from.',
-    'TikTok Spark Ads': 'Our Spark Ads service turns native TikTok content—either your own or our recommended creatives—into powerful ads served directly in the For You feed. These campaigns deliver best-in-class CPVs (as low as $0.03), with precision targeting for playlisting, ticket sales, or streaming. We optimize your campaign daily by scaling top-performing creatives and provide clear weekly reporting and final data exports.'
+    'TikTok Spark Ads': 'Our Spark Ads service turns native TikTok content—either your own or our recommended creatives—into powerful ads served directly in the For You feed. These campaigns deliver best-in-class CPVs (as low as $0.03), with precision targeting for playlisting, ticket sales, or streaming. We optimize your campaign daily by scaling top-performing creatives and provide clear weekly reporting and final data exports.',
+    'Standard UGC Clipping': 'Approval-only clipper campaigns featuring hundreds of clips seeded from client content (sets, vlogs, performances) or sourced from social media (EDM memes, racing clips, etc). Each campaign delivers authentic, high-engagement content distributed through our verified creator network, designed to maximize organic discovery without relying on bot traffic. Campaigns run 2-3 weeks with full transparency and trackable results.',
+    'Culture Edits': 'Premium placements on established film, TV, or sports edit pages—never new accounts. Each edit is a fully cinematic storytelling piece designed to tap into nostalgia and viral fandom, connecting your music with passionate communities who actively engage with content. We handpick pages based on genre alignment and audience quality, ensuring every placement drives real engagement. Campaigns run 2-3 weeks with detailed performance tracking.',
+    'Top 50 Trending / Popular Tab Push': 'Guaranteed trending placement on YouTube Shorts, Instagram Reels, and Facebook Reels (Top 50) plus visibility on TikTok's Popular Tab. This service combines AI-optimized content with real UGC to trigger algorithmic lift across all major platforms simultaneously. Designed for maximum exposure velocity, campaigns run 2-3 weeks and include comprehensive cross-platform analytics.',
+    'Creator Flood': '10,000+ real TikTok UGC posts from international nano-creators with strategic macro-influencer amplification mixed in. This high-volume approach saturates TikTok's algorithm to create sustained momentum, often exceeding 10K posts based on performance. Campaign duration is 3-4 weeks with detailed creator breakdowns and engagement metrics provided throughout.'
   };
 
   // Release timing logic
@@ -214,6 +218,39 @@ async function generateProposalContent(clientDetails: any, campaignData: any) {
     selectedLines.push(`- Meta & TikTok Ads: ${campaignData.metaTiktokAds.platform} - $${usd(budget)} budget — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
   }
 
+  // UGC Services
+  if (campaignData.ugcServices?.enabled) {
+    if (campaignData.ugcServices.standardUgcClipping?.enabled) {
+      const base = Number(campaignData.ugcServices.standardUgcClipping.price || 0);
+      const discount = Number(campaignData.ugcServices.standardUgcClipping.discount || 0);
+      const discounted = Math.round(base * (1 - discount / 100));
+      const views = Number(campaignData.ugcServices.standardUgcClipping.targetViews || 0);
+      selectedLines.push(`- Standard UGC Clipping: ${views.toLocaleString()} views — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+    }
+
+    if (campaignData.ugcServices.cultureEdits?.enabled) {
+      const base = Number(campaignData.ugcServices.cultureEdits.price || 0);
+      const discount = Number(campaignData.ugcServices.cultureEdits.discount || 0);
+      const discounted = Math.round(base * (1 - discount / 100));
+      const views = Number(campaignData.ugcServices.cultureEdits.targetViews || 0);
+      selectedLines.push(`- Culture Edits: ${views.toLocaleString()} views — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+    }
+
+    if (campaignData.ugcServices.trendingPush?.enabled) {
+      const base = 7500;
+      const discount = Number(campaignData.ugcServices.trendingPush.discount || 0);
+      const discounted = Math.round(base * (1 - discount / 100));
+      selectedLines.push(`- Top 50 Trending / Popular Tab Push — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+    }
+
+    if (campaignData.ugcServices.creatorFlood?.enabled) {
+      const base = 10000;
+      const discount = Number(campaignData.ugcServices.creatorFlood.discount || 0);
+      const discounted = Math.round(base * (1 - discount / 100));
+      selectedLines.push(`- Creator Flood — $${usd(base)}${discount > 0 ? ` (-${discount}% = $${usd(discounted)})` : ''}`);
+    }
+  }
+
   const selectedServicesAndPricing = selectedLines.join('\n');
   const totalInvestment = Math.round(calculateTotalAmount(campaignData));
   
@@ -238,6 +275,10 @@ SERVICE-SPECIFIC GOALS EXAMPLES:
 - SoundCloud Reposts: "Build underground community engagement through verified artist network exposure"
 - Instagram Seeding: "Generate viral content momentum through strategic influencer partnerships and fan page features"
 - Meta & TikTok Ads: "Drive cost-effective traffic and conversions through optimized social media advertising campaigns"
+- Standard UGC Clipping: "Maximize organic discovery through authentic creator-driven content seeded across high-engagement social channels"
+- Culture Edits: "Build viral momentum by tapping into established fan communities through cinematic storytelling placements"
+- Top 50 Trending / Popular Tab Push: "Trigger algorithmic lift with guaranteed trending placements across YouTube, Instagram, Facebook, and TikTok"
+- Creator Flood: "Saturate TikTok's algorithm with 10,000+ real UGC posts for sustained momentum and discovery"
 
 💰 COST BREAKDOWN
 [List each service name, quantity/type, and price in consistent format.]
@@ -354,7 +395,11 @@ function generateFallbackProposal(clientDetails: any, campaignData: any, activeS
     'Spotify Playlisting': 'Secure organic playlist placements to boost monthly listeners and trigger algorithm recommendations',
     'SoundCloud Reposts': 'Build underground community engagement through verified artist network exposure',
     'Instagram Seeding': 'Generate viral content momentum through strategic influencer partnerships and fan page features',
-    'Meta & TikTok Ads': 'Drive cost-effective traffic and conversions through optimized social media advertising campaigns'
+    'Meta & TikTok Ads': 'Drive cost-effective traffic and conversions through optimized social media advertising campaigns',
+    'Standard UGC Clipping': 'Maximize organic discovery through authentic creator-driven content seeded across high-engagement social channels',
+    'Culture Edits': 'Build viral momentum by tapping into established fan communities through cinematic storytelling placements',
+    'Top 50 Trending / Popular Tab Push': 'Trigger algorithmic lift with guaranteed trending placements across YouTube, Instagram, Facebook, and TikTok',
+    'Creator Flood': 'Saturate TikTok\'s algorithm with 10,000+ real UGC posts for sustained momentum and discovery'
   };
 
   const serviceGoals = activeServices.map(service => 
@@ -450,6 +495,10 @@ function generateEmailTemplate(clientDetails: any, aiContent: string, validUntil
       <p>SoundCloud Reposts: $${commissions.soundcloudReposts}</p>
       <p>Instagram Seeding: $${commissions.instagramSeeding}</p>
       <p>Meta &amp; TikTok Ads: $${commissions.metaTiktokAds}</p>
+      <p>Standard UGC Clipping: $${commissions.standardUgcClipping}</p>
+      <p>Culture Edits: $${commissions.cultureEdits}</p>
+      <p>Trending/Popular Push: $${commissions.trendingPush}</p>
+      <p>Creator Flood: $${commissions.creatorFlood}</p>
       <p style="font-weight: bold; margin-top: 15px;">TOTAL COMMISSION: $${commissionTotal}</p>
     </div>
   `;
@@ -528,6 +577,41 @@ function getActiveServices(campaignData: any) {
     });
   }
   
+  // UGC Services
+  if (campaignData.ugcServices?.enabled) {
+    if (campaignData.ugcServices.standardUgcClipping?.enabled && campaignData.ugcServices.standardUgcClipping.price > 0) {
+      services.push({
+        name: 'Standard UGC Clipping',
+        details: `${campaignData.ugcServices.standardUgcClipping.targetViews.toLocaleString()} views`,
+        price: campaignData.ugcServices.standardUgcClipping.price
+      });
+    }
+    
+    if (campaignData.ugcServices.cultureEdits?.enabled && campaignData.ugcServices.cultureEdits.price > 0) {
+      services.push({
+        name: 'Culture Edits',
+        details: `${campaignData.ugcServices.cultureEdits.targetViews.toLocaleString()} views`,
+        price: campaignData.ugcServices.cultureEdits.price
+      });
+    }
+    
+    if (campaignData.ugcServices.trendingPush?.enabled) {
+      services.push({
+        name: 'Top 50 Trending / Popular Tab Push',
+        details: 'Guaranteed trending placement',
+        price: 7500
+      });
+    }
+    
+    if (campaignData.ugcServices.creatorFlood?.enabled) {
+      services.push({
+        name: 'Creator Flood',
+        details: '10,000+ TikTok UGC posts',
+        price: 10000
+      });
+    }
+  }
+  
   return services;
 }
 
@@ -586,6 +670,30 @@ function calculateTotalAmount(campaignData: any): number {
     total += price * (1 - discount / 100);
   }
   
+  // UGC Services
+  if (campaignData.ugcServices?.enabled) {
+    if (campaignData.ugcServices.standardUgcClipping?.enabled) {
+      const price = campaignData.ugcServices.standardUgcClipping.price || 0;
+      const discount = campaignData.ugcServices.standardUgcClipping.discount || 0;
+      total += price * (1 - discount / 100);
+    }
+    if (campaignData.ugcServices.cultureEdits?.enabled) {
+      const price = campaignData.ugcServices.cultureEdits.price || 0;
+      const discount = campaignData.ugcServices.cultureEdits.discount || 0;
+      total += price * (1 - discount / 100);
+    }
+    if (campaignData.ugcServices.trendingPush?.enabled) {
+      const price = 7500;
+      const discount = campaignData.ugcServices.trendingPush.discount || 0;
+      total += price * (1 - discount / 100);
+    }
+    if (campaignData.ugcServices.creatorFlood?.enabled) {
+      const price = 10000;
+      const discount = campaignData.ugcServices.creatorFlood.discount || 0;
+      total += price * (1 - discount / 100);
+    }
+  }
+  
   return total;
 }
 
@@ -603,7 +711,11 @@ function calculateCommissions(campaignData: any) {
     spotifyPlaylisting: 0,
     soundcloudReposts: 0,
     instagramSeeding: 0,
-    metaTiktokAds: 0
+    metaTiktokAds: 0,
+    standardUgcClipping: 0,
+    cultureEdits: 0,
+    trendingPush: 0,
+    creatorFlood: 0
   };
 
   if (campaignData.youtubeAds?.enabled) {
@@ -620,6 +732,22 @@ function calculateCommissions(campaignData: any) {
   }
   if (campaignData.metaTiktokAds?.enabled) {
     commissions.metaTiktokAds = Math.round(calculateNetCommission(applyServiceDiscount(campaignData.metaTiktokAds.price || 0, campaignData.metaTiktokAds.discount || 0)));
+  }
+
+  // UGC Services
+  if (campaignData.ugcServices?.enabled) {
+    if (campaignData.ugcServices.standardUgcClipping?.enabled) {
+      commissions.standardUgcClipping = Math.round((applyServiceDiscount(campaignData.ugcServices.standardUgcClipping.price || 0, campaignData.ugcServices.standardUgcClipping.discount || 0)) * 0.125);
+    }
+    if (campaignData.ugcServices.cultureEdits?.enabled) {
+      commissions.cultureEdits = Math.round((applyServiceDiscount(campaignData.ugcServices.cultureEdits.price || 0, campaignData.ugcServices.cultureEdits.discount || 0)) * 0.125);
+    }
+    if (campaignData.ugcServices.trendingPush?.enabled) {
+      commissions.trendingPush = Math.round((applyServiceDiscount(7500, campaignData.ugcServices.trendingPush.discount || 0)) * 0.10);
+    }
+    if (campaignData.ugcServices.creatorFlood?.enabled) {
+      commissions.creatorFlood = Math.round((applyServiceDiscount(10000, campaignData.ugcServices.creatorFlood.discount || 0)) * 0.10);
+    }
   }
 
   return commissions;

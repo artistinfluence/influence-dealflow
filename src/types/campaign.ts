@@ -32,6 +32,32 @@ export interface CampaignData {
     price: number;
     discount: number; // max 5%
   };
+  ugcServices: {
+    enabled: boolean;
+    standardUgcClipping: {
+      enabled: boolean;
+      targetViews: number;
+      price: number;
+      discount: number; // max 20%
+    };
+    cultureEdits: {
+      enabled: boolean;
+      targetViews: number;
+      price: number;
+      discount: number; // max 20%
+    };
+    trendingPush: {
+      enabled: boolean;
+      price: number;
+      discount: number; // max 10%
+    };
+    creatorFlood: {
+      enabled: boolean;
+      price: number;
+      discount: number; // max 10%
+    };
+    totalPrice: number;
+  };
 }
 
 export const getDefaultCampaignData = (): CampaignData => ({
@@ -70,5 +96,31 @@ export const getDefaultCampaignData = (): CampaignData => ({
     budget: 0,
     price: 0,
     discount: 0,
+  },
+  ugcServices: {
+    enabled: false,
+    standardUgcClipping: {
+      enabled: false,
+      targetViews: 200000,
+      price: 0,
+      discount: 0,
+    },
+    cultureEdits: {
+      enabled: false,
+      targetViews: 666667,
+      price: 0,
+      discount: 0,
+    },
+    trendingPush: {
+      enabled: false,
+      price: 7500,
+      discount: 0,
+    },
+    creatorFlood: {
+      enabled: false,
+      price: 10000,
+      discount: 0,
+    },
+    totalPrice: 0,
   },
 });

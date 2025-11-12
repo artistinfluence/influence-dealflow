@@ -26,12 +26,35 @@ const SalesPortal: React.FC = () => {
       return price * (1 - discount / 100);
     };
 
+    // UGC Services commission calculations
+    const calculateUGCCommission = (price: number, rate: number) => price * rate;
+
+    const standardUgcClipping = campaignData.ugcServices?.enabled && campaignData.ugcServices.standardUgcClipping?.enabled 
+      ? calculateUGCCommission(applyServiceDiscount(campaignData.ugcServices.standardUgcClipping.price, campaignData.ugcServices.standardUgcClipping.discount), 0.125) 
+      : 0;
+
+    const cultureEdits = campaignData.ugcServices?.enabled && campaignData.ugcServices.cultureEdits?.enabled 
+      ? calculateUGCCommission(applyServiceDiscount(campaignData.ugcServices.cultureEdits.price, campaignData.ugcServices.cultureEdits.discount), 0.125) 
+      : 0;
+
+    const trendingPush = campaignData.ugcServices?.enabled && campaignData.ugcServices.trendingPush?.enabled 
+      ? calculateUGCCommission(applyServiceDiscount(7500, campaignData.ugcServices.trendingPush.discount), 0.10) 
+      : 0;
+
+    const creatorFlood = campaignData.ugcServices?.enabled && campaignData.ugcServices.creatorFlood?.enabled 
+      ? calculateUGCCommission(applyServiceDiscount(10000, campaignData.ugcServices.creatorFlood.discount), 0.10) 
+      : 0;
+
     return {
       youtubeAds: campaignData.youtubeAds.enabled ? calculateGrossCommission(applyServiceDiscount(campaignData.youtubeAds.totalPrice, campaignData.youtubeAds.discount)) : 0,
       spotifyPlaylisting: campaignData.spotifyPlaylisting.enabled ? calculateGrossCommission(applyServiceDiscount(campaignData.spotifyPlaylisting.price, campaignData.spotifyPlaylisting.discount)) : 0,
       soundcloudReposts: campaignData.soundcloudReposts.enabled ? calculateGrossCommission(applyServiceDiscount(campaignData.soundcloudReposts.price, campaignData.soundcloudReposts.discount)) : 0,
       instagramSeeding: campaignData.instagramSeeding.enabled ? calculateNetCommission(applyServiceDiscount(campaignData.instagramSeeding.price, campaignData.instagramSeeding.discount)) : 0,
       metaTiktokAds: campaignData.metaTiktokAds.enabled ? calculateNetCommission(applyServiceDiscount(campaignData.metaTiktokAds.price, campaignData.metaTiktokAds.discount)) : 0,
+      standardUgcClipping,
+      cultureEdits,
+      trendingPush,
+      creatorFlood,
     };
   };
 

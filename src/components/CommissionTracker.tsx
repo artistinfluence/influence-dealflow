@@ -6,6 +6,10 @@ export interface CommissionData {
   soundcloudReposts: number;
   instagramSeeding: number;
   metaTiktokAds: number;
+  standardUgcClipping: number;
+  cultureEdits: number;
+  trendingPush: number;
+  creatorFlood: number;
 }
 
 interface CommissionTrackerProps {
@@ -53,6 +57,26 @@ const CommissionTracker: React.FC<CommissionTrackerProps> = ({ commissions }) =>
         <div className="commission-item flex justify-between text-sm">
           <span>META & TIKTOK ADS</span>
           <span>{formatCurrency(commissions.metaTiktokAds)}</span>
+        </div>
+        
+        <div className="commission-item flex justify-between text-sm">
+          <span>STANDARD UGC CLIPPING</span>
+          <span>{formatCurrency(commissions.standardUgcClipping)}</span>
+        </div>
+        
+        <div className="commission-item flex justify-between text-sm">
+          <span>CULTURE EDITS</span>
+          <span>{formatCurrency(commissions.cultureEdits)}</span>
+        </div>
+        
+        <div className="commission-item flex justify-between text-sm">
+          <span>TRENDING/POPULAR PUSH</span>
+          <span>{formatCurrency(commissions.trendingPush)}</span>
+        </div>
+        
+        <div className="commission-item flex justify-between text-sm">
+          <span>CREATOR FLOOD</span>
+          <span>{formatCurrency(commissions.creatorFlood)}</span>
         </div>
         
         <div className="border-t border-border pt-3">

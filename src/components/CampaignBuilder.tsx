@@ -8,6 +8,7 @@ import SpotifyPlaylistingService from './services/SpotifyPlaylistingService';
 import SoundCloudRepostsService from './services/SoundCloudRepostsService';
 import InstagramSeedingService from './services/InstagramSeedingService';
 import MetaTikTokAdsService from './services/MetaTikTokAdsService';
+import UGCServicesComponent from './services/UGCServicesComponent';
 
 interface CampaignBuilderProps {
   campaignData: CampaignData;
@@ -48,6 +49,17 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
 
   const handleMetaTikTokUpdate = (platform: string, budget: number) => {
     updateService('metaTiktokAds', { platform, budget, price: budget });
+  };
+
+  const handleUGCUpdate = (updates: any) => {
+    // Calculate total price from all enabled sub-services
+    const standardPrice = updates.standardUgcClipping?.enabled ? updates.standardUgcClipping.price : 0;
+    const culturePrice = updates.cultureEdits?.enabled ? updates.cultureEdits.price : 0;
+    const trendingPrice = updates.trendingPush?.enabled ? 7500 : 0;
+    const creatorPrice = updates.creatorFlood?.enabled ? 10000 : 0;
+    const totalPrice = standardPrice + culturePrice + trendingPrice + creatorPrice;
+
+    updateService('ugcServices', { ...updates, totalPrice });
   };
 
   const handleServiceDiscountUpdate = (service: keyof CampaignData, discount: number) => {
@@ -266,6 +278,29 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
                 </div>
               </div>
             </div>
+          )}
+        </div>
+
+        {/* UGC Services */}
+        <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h3 className="text-lg font-bebas tracking-wide">
+                UGC SERVICES
+              </h3>
+              <p className="text-xs text-muted-foreground">User-generated content campaigns</p>
+            </div>
+            <Switch
+              checked={campaignData.ugcServices.enabled}
+              onCheckedChange={() => toggleService('ugcServices')}
+            />
+          </div>
+          
+          {campaignData.ugcServices.enabled && (
+            <UGCServicesComponent
+              data={campaignData.ugcServices}
+              onUpdate={handleUGCUpdate}
+            />
           )}
         </div>
 

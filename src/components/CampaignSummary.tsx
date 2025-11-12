@@ -78,6 +78,45 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({ campaignData }) => {
       });
     }
 
+    // UGC Services
+    if (campaignData.ugcServices?.enabled) {
+      if (campaignData.ugcServices.standardUgcClipping?.enabled && campaignData.ugcServices.standardUgcClipping.price > 0) {
+        services.push({
+          name: 'STANDARD UGC CLIPPING',
+          details: `${campaignData.ugcServices.standardUgcClipping.targetViews.toLocaleString()} views`,
+          price: campaignData.ugcServices.standardUgcClipping.price,
+          discount: campaignData.ugcServices.standardUgcClipping.discount,
+        });
+      }
+
+      if (campaignData.ugcServices.cultureEdits?.enabled && campaignData.ugcServices.cultureEdits.price > 0) {
+        services.push({
+          name: 'CULTURE EDITS',
+          details: `${campaignData.ugcServices.cultureEdits.targetViews.toLocaleString()} views`,
+          price: campaignData.ugcServices.cultureEdits.price,
+          discount: campaignData.ugcServices.cultureEdits.discount,
+        });
+      }
+
+      if (campaignData.ugcServices.trendingPush?.enabled) {
+        services.push({
+          name: 'TOP 50 TRENDING / POPULAR TAB PUSH',
+          details: 'Guaranteed trending placement',
+          price: 7500,
+          discount: campaignData.ugcServices.trendingPush.discount,
+        });
+      }
+
+      if (campaignData.ugcServices.creatorFlood?.enabled) {
+        services.push({
+          name: 'CREATOR FLOOD',
+          details: '10,000+ TikTok UGC posts',
+          price: 10000,
+          discount: campaignData.ugcServices.creatorFlood.discount,
+        });
+      }
+    }
+
     return services;
   };
 
