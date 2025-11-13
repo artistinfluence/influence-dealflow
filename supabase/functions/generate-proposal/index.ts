@@ -583,7 +583,8 @@ function getActiveServices(campaignData: any) {
       services.push({
         name: 'Standard UGC Clipping',
         details: `${campaignData.ugcServices.standardUgcClipping.targetViews.toLocaleString()} views`,
-        price: campaignData.ugcServices.standardUgcClipping.price
+        price: campaignData.ugcServices.standardUgcClipping.price,
+        discount: campaignData.ugcServices.standardUgcClipping.discount || 0
       });
     }
     
@@ -591,7 +592,8 @@ function getActiveServices(campaignData: any) {
       services.push({
         name: 'Culture Edits',
         details: `${campaignData.ugcServices.cultureEdits.targetViews.toLocaleString()} views`,
-        price: campaignData.ugcServices.cultureEdits.price
+        price: campaignData.ugcServices.cultureEdits.price,
+        discount: campaignData.ugcServices.cultureEdits.discount || 0
       });
     }
     
@@ -599,7 +601,8 @@ function getActiveServices(campaignData: any) {
       services.push({
         name: 'Top 50 Trending / Popular Tab Push',
         details: 'Guaranteed trending placement',
-        price: 7500
+        price: 7500,
+        discount: 0
       });
     }
     
@@ -607,7 +610,8 @@ function getActiveServices(campaignData: any) {
       services.push({
         name: 'Creator Flood',
         details: '10,000+ TikTok UGC posts',
-        price: 10000
+        price: 10000,
+        discount: 0
       });
     }
   }
@@ -636,6 +640,25 @@ function getServiceDescriptions(campaignData: any): string {
   
   if (campaignData.metaTiktokAds?.enabled) {
     descriptions.push(`META & TIKTOK ADS: Our social media campaigns deliver targeted reach through optimized ad placements across Facebook, Instagram, and TikTok. We create engaging creative content that drives streams, follows, and algorithmic growth.`);
+  }
+  
+  // UGC Services
+  if (campaignData.ugcServices?.enabled) {
+    if (campaignData.ugcServices.standardUgcClipping?.enabled) {
+      descriptions.push(`STANDARD UGC CLIPPING: Approval-only clipper campaigns featuring hundreds of clips seeded from client content (sets, vlogs, performances) or sourced from social media (EDM memes, racing clips, etc). Each campaign delivers authentic, high-engagement content distributed through our verified creator network, designed to maximize organic discovery without relying on bot traffic. Campaigns run 2-3 weeks with full transparency and trackable results.`);
+    }
+    
+    if (campaignData.ugcServices.cultureEdits?.enabled) {
+      descriptions.push(`CULTURE EDITS: Premium placements on established film, TV, or sports edit pages—never new accounts. Each edit is a fully cinematic storytelling piece designed to tap into nostalgia and viral fandom, connecting your music with passionate communities who actively engage with content. We handpick pages based on genre alignment and audience quality, ensuring every placement drives real engagement. Campaigns run 2-3 weeks with detailed performance tracking.`);
+    }
+    
+    if (campaignData.ugcServices.trendingPush?.enabled) {
+      descriptions.push(`TOP 50 TRENDING / POPULAR TAB PUSH: Guaranteed trending placement on YouTube Shorts, Instagram Reels, and Facebook Reels (Top 50) plus visibility on TikTok's Popular Tab. This service combines AI-optimized content with real UGC to trigger algorithmic lift across all major platforms simultaneously. Designed for maximum exposure velocity, campaigns run 2-3 weeks and include comprehensive cross-platform analytics.`);
+    }
+    
+    if (campaignData.ugcServices.creatorFlood?.enabled) {
+      descriptions.push(`CREATOR FLOOD: 10,000+ real TikTok UGC posts from international nano-creators with strategic macro-influencer amplification mixed in. This high-volume approach saturates TikTok's algorithm to create sustained momentum, often exceeding 10K posts based on performance. Campaign duration is 3-4 weeks with detailed creator breakdowns and engagement metrics provided throughout.`);
+    }
   }
   
   return descriptions.join('\n\n');
