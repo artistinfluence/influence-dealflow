@@ -118,7 +118,7 @@ export const getDefaultCampaignData = (): CampaignData => ({
     },
     creatorFlood: {
       enabled: false,
-      price: 10000,
+      price: 7500,
       discount: 0,
     },
     totalPrice: 0,

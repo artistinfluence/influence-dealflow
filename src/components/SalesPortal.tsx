@@ -42,7 +42,7 @@ const SalesPortal: React.FC = () => {
       : 0;
 
     const creatorFlood = campaignData.ugcServices?.enabled && campaignData.ugcServices.creatorFlood?.enabled 
-      ? calculateUGCCommission(applyServiceDiscount(10000, campaignData.ugcServices.creatorFlood.discount), 0.10) 
+      ? calculateUGCCommission(applyServiceDiscount(7500, campaignData.ugcServices.creatorFlood.discount), 0.10) 
       : 0;
 
     return {
