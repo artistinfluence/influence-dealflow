@@ -246,7 +246,7 @@ const UGCServicesComponent: React.FC<UGCServicesComponentProps> = ({ data, onUpd
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-bebas tracking-wide text-base">CREATOR FLOOD</h4>
-            <p className="text-xs text-muted-foreground">Flat {formatCurrency(10000)} • 3-4 week campaign</p>
+            <p className="text-xs text-muted-foreground">Flat {formatCurrency(7500)} • 3-4 week campaign</p>
             <p className="text-xs text-muted-foreground">10,000+ real TikTok UGC posts</p>
           </div>
           <Switch
@@ -258,7 +258,7 @@ const UGCServicesComponent: React.FC<UGCServicesComponentProps> = ({ data, onUpd
         {data.creatorFlood.enabled && (
           <div className="space-y-4">
             <div className="p-3 bg-primary/10 rounded border border-primary/20">
-              <p className="text-sm">Price: <span className="font-bold">{formatCurrency(10000)}</span></p>
+              <p className="text-sm">Price: <span className="font-bold">{formatCurrency(7500)}</span></p>
             </div>
 
             <div className="space-y-2">

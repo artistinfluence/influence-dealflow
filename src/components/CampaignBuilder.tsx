@@ -56,7 +56,7 @@ const CampaignBuilder: React.FC<CampaignBuilderProps> = ({ campaignData, onUpdat
     const standardPrice = updates.standardUgcClipping?.enabled ? updates.standardUgcClipping.price : 0;
     const culturePrice = updates.cultureEdits?.enabled ? updates.cultureEdits.price : 0;
     const trendingPrice = updates.trendingPush?.enabled ? 7500 : 0;
-    const creatorPrice = updates.creatorFlood?.enabled ? 10000 : 0;
+    const creatorPrice = updates.creatorFlood?.enabled ? 7500 : 0;
     const totalPrice = standardPrice + culturePrice + trendingPrice + creatorPrice;
 
     updateService('ugcServices', { ...updates, totalPrice });
